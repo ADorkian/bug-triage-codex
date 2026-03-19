@@ -1,9 +1,9 @@
-# Draft Jira Comment: {{issue_key}}
+# Bozza Commento Jira: {{issue_key}}
 
 @{{reporter}}
 
-Thanks. Before we can triage this bug correctly, we still need the following:
+Grazie. Prima di poter fare il triage corretto di questo bug, ci servono ancora queste informazioni:
 
 {{missing_requests}}
 
-Once we have those details, we can continue with normalization and technical triage.
+Quando avremo questi dettagli, potremo proseguire con la normalizzazione e il triage tecnico.

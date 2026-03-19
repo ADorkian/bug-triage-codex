@@ -31,6 +31,7 @@ Rules:
 - Distinguish confirmed facts from hypotheses.
 - If information is weak, lower confidence rather than filling gaps with guesses.
 - The output must be clean markdown using templates/triage-item.md.
+- Write the artifact in Italian by default. Use English only when the run prompt explicitly requests English.
 """
 
 [inputs]

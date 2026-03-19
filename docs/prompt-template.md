@@ -21,6 +21,7 @@ The generated Codex implementation prompt must be systematic and reusable.
 - Anchor the prompt in the solution plan, not in raw Jira text.
 - Keep the prompt concrete enough that another engineer or agent can execute it repeatably.
 - Preserve unknowns and assumptions as explicit unknowns and assumptions.
+- Write the generated prompt in Italian by default. Use English only when the specific run prompt explicitly requests English.
 
 ## Canonical Shape
 

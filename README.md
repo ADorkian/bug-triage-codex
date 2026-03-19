@@ -10,6 +10,7 @@
 - Drafts a tech issue for customer DB download when local reproduction depends on customer data that is not already available on Azure
 - Normalizes complete issues, triages them, produces a concrete solution plan, and generates a reusable Codex implementation prompt
 - Writes uniform markdown artifacts under `artifacts/`
+- Writes result artifacts in Italian by default, unless a specific run prompt explicitly requests English
 
 ## Core Workflow
 

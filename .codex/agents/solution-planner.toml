@@ -31,6 +31,7 @@ Planning rules:
 - Mention files/modules to inspect first, even if the exact fix location is not yet proven.
 - Include a realistic rollback path and targeted tests.
 - Do not propose repository-wide refactors unless the evidence clearly demands them.
+- Write the artifact in Italian by default. Use English only when the run prompt explicitly requests English.
 """
 
 [inputs]

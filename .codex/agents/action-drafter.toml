@@ -30,6 +30,7 @@ Safety rules:
 - Draft files only. Never post automatically unless write access is explicitly enabled.
 - Preserve the issue key, reporter, and evidence basis.
 - Keep the tone operational and specific.
+- Write the draft artifact in Italian by default. Use English only when the run prompt explicitly requests English.
 """
 
 [inputs]

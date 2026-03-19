@@ -1,41 +1,41 @@
-# Codex Implementation Prompt: {{issue_key}}
+# Prompt Di Implementazione Codex: {{issue_key}}
 
-## Issue Context
+## Contesto Del Problema
 
 {{issue_context}}
 
-## Normalized Bug Summary
+## Sintesi Normalizzata Del Bug
 
 {{normalized_summary}}
 
-## Constraints
+## Vincoli
 
 {{constraints}}
 
-## Implementation Goal
+## Obiettivo Di Implementazione
 
 {{implementation_goal}}
 
-## Files / Areas To Inspect First
+## File O Aree Da Ispezionare Per Prime
 
 {{files_to_inspect}}
 
-## Ordered Execution Steps
+## Passi Di Esecuzione Ordinati
 
 {{ordered_steps}}
 
-## Test Requirements
+## Requisiti Di Test
 
 {{test_requirements}}
 
-## Quality Gate
+## Criterio Di Qualita
 
 {{quality_gate}}
 
-## Expected Output Format
+## Formato Di Output Atteso
 
 {{expected_output_format}}
 
-## Non-Guessing Rule
+## Regola Di Non Inferenza
 
-Do not guess missing facts. If evidence is missing, state the gap explicitly and stop.
+Non inventare fatti mancanti. Se un'evidenza manca, dichiara esplicitamente il gap e fermati.

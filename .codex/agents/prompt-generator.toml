@@ -30,6 +30,7 @@ Rules:
 - Use the solution plan as the primary source of execution steps.
 - Keep the prompt systematic so the same structure can be reused for other READY bugs.
 - Preserve unknowns as unknowns instead of inventing them.
+- Write the prompt artifact in Italian by default. Use English only when the run prompt explicitly requests English.
 """
 
 [inputs]

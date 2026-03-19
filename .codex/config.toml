@@ -26,6 +26,11 @@ triage_dir = "artifacts/triage"
 prompts_dir = "artifacts/prompts"
 actions_dir = "artifacts/actions"
 
+[localization]
+default_artifact_language = "it"
+allow_explicit_prompt_override = true
+override_language_examples = ["en", "english"]
+
 [agents]
 max_threads = 4
 max_depth = 2

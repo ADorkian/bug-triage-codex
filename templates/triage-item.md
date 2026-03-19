@@ -1,29 +1,29 @@
 # {{issue_key}} Triage
 
-## Classification
+## Classificazione
 
-- Severity: {{severity}}
-- Customer/business impact: {{business_impact}}
-- Reproducibility: {{reproducibility}}
-- Confidence: {{confidence}}
-- Suspected subsystem: {{suspected_subsystem}}
-- Recommended owner: {{recommended_owner}}
-- Implementation readiness: {{implementation_readiness}}
+- Severita: {{severity}}
+- Impatto cliente/business: {{business_impact}}
+- Riproducibilita: {{reproducibility}}
+- Confidenza: {{confidence}}
+- Sottosistema sospetto: {{suspected_subsystem}}
+- Responsabile consigliato: {{recommended_owner}}
+- Prontezza implementativa: {{implementation_readiness}}
 
-## Analysis
+## Analisi
 
-### Probable Cause
+### Causa Probabile
 
 {{probable_cause}}
 
-### Missing Information
+### Informazioni Mancanti
 
 {{missing_information}}
 
-### Blockers
+### Blocchi
 
 {{blockers}}
 
-### Evidence Notes
+### Note Sulle Evidenze
 
 {{evidence_notes}}

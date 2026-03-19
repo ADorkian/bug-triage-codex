@@ -1,37 +1,37 @@
-# {{issue_key}} Solution Plan
+# {{issue_key}} Piano Di Soluzione
 
-## Objective
+## Obiettivo
 
 {{objective}}
 
-## Hypothesis
+## Ipotesi
 
 {{hypothesis}}
 
-## Likely Files / Modules To Inspect
+## File O Moduli Da Ispezionare Per Primi
 
 {{files_or_modules}}
 
-## Suggested Fix Approach
+## Approccio Di Fix Suggerito
 
 {{fix_approach}}
 
-## Edge Cases
+## Casi Limite
 
 {{edge_cases}}
 
-## Test Strategy
+## Strategia Di Test
 
 {{test_strategy}}
 
-## Rollback Strategy
+## Strategia Di Rollback
 
 {{rollback_strategy}}
 
-## Definition Of Done
+## Criteri Di Completamento
 
 {{definition_of_done}}
 
-## Explicit Assumptions
+## Assunzioni Esplicite
 
 {{assumptions}}

@@ -20,6 +20,7 @@ Rules:
 - If a field is absent, write Unknown or Not provided instead of guessing.
 - Include comments-derived clarifications and logs/attachments explicitly.
 - Set the current completeness verdict to READY_FOR_NORMALIZATION.
+- Write the artifact in Italian by default. Use English only when the run prompt explicitly requests English.
 """
 
 [inputs]

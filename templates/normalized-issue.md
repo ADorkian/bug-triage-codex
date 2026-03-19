@@ -1,42 +1,42 @@
-# {{issue_key}} Normalized Issue
+# {{issue_key}} Issue Normalizzata
 
-## Metadata
+## Metadati
 
-- Issue key: {{issue_key}}
-- Title: {{title}}
-- Product area: {{product_area}}
-- Product version: {{product_version}}
-- Jira priority: {{jira_priority}}
+- Chiave issue: {{issue_key}}
+- Titolo: {{title}}
+- Area prodotto: {{product_area}}
+- Versione prodotto: {{product_version}}
+- Priorita Jira: {{jira_priority}}
 - Reporter: {{reporter}}
 
-## Business Context
+## Contesto Di Business
 
 {{business_context}}
 
-## Steps To Reproduce
+## Passi Per Riprodurre
 
 {{steps_to_reproduce}}
 
-## Expected Behavior
+## Comportamento Atteso
 
 {{expected_behavior}}
 
-## Actual Behavior
+## Comportamento Attuale
 
 {{actual_behavior}}
 
-## Comments-Derived Clarifications
+## Chiarimenti Derivati Dai Commenti
 
 {{comment_clarifications}}
 
-## Logs And Attachments
+## Log E Allegati
 
 {{logs_and_attachments}}
 
-## Dependencies
+## Dipendenze
 
 {{dependencies}}
 
-## Current Completeness Verdict
+## Verdetto Attuale Di Completezza
 
 {{completeness_verdict}}

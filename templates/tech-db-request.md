@@ -1,27 +1,27 @@
-# Draft Tech DB Request: {{issue_key}}
+# Bozza Richiesta DB Tecnico: {{issue_key}}
 
-## Requested Issue Summary
+## Sintesi Della Richiesta
 
-Customer DB request for {{issue_key}} - {{title}}
+Richiesta DB cliente per {{issue_key}} - {{title}}
 
-## Source Bug
+## Bug Di Origine
 
-- Jira bug: {{issue_key}}
+- Bug Jira: {{issue_key}}
 - Reporter: {{reporter}}
-- Priority: {{priority}}
+- Priorita: {{priority}}
 
-## Why Customer Data Is Required
+## Perche Sono Necessari I Dati Del Cliente
 
 {{db_reason}}
 
-## Azure Availability Check
+## Verifica Disponibilita Su Azure
 
 {{azure_status}}
 
-## Requested Action
+## Azione Richiesta
 
-Please confirm whether the customer DB is already available on Azure. If it is not available, arrange the DB download or equivalent access needed to reproduce and investigate this bug safely.
+Confermare se il DB cliente e gia disponibile su Azure. Se non e disponibile, predisporre il download del DB o un accesso equivalente necessario per riprodurre e analizzare questo bug in sicurezza.
 
-## Evidence
+## Evidenze
 
 {{evidence_summary}}

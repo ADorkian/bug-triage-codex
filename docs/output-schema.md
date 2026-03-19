@@ -1,6 +1,6 @@
 # Output Schema
 
-All artifacts in this repository are markdown. Filenames are deterministic and keyed by Jira issue key.
+All artifacts in this repository are markdown. Filenames are deterministic and keyed by Jira issue key. Artifact prose is written in Italian by default, unless a specific run prompt explicitly requests English.
 
 ## Per-Bug Artifacts
 
@@ -25,13 +25,13 @@ The following level-1 markdown headers are mandatory:
 
 | Artifact | Required H1 |
 |---|---|
-| Normalized issue | `# {ISSUE_KEY} Normalized Issue` |
+| Normalized issue | `# {ISSUE_KEY} Issue Normalizzata` |
 | Triage | `# {ISSUE_KEY} Triage` |
-| Solution plan | `# {ISSUE_KEY} Solution Plan` |
-| Codex prompt | `# Codex Implementation Prompt: {ISSUE_KEY}` |
-| Jira comment draft | `# Draft Jira Comment: {ISSUE_KEY}` |
-| Tech DB request draft | `# Draft Tech DB Request: {ISSUE_KEY}` |
-| Run summary | `# Jira Bug Triage Summary` |
+| Solution plan | `# {ISSUE_KEY} Piano Di Soluzione` |
+| Codex prompt | `# Prompt Di Implementazione Codex: {ISSUE_KEY}` |
+| Jira comment draft | `# Bozza Commento Jira: {ISSUE_KEY}` |
+| Tech DB request draft | `# Bozza Richiesta DB Tecnico: {ISSUE_KEY}` |
+| Run summary | `# Sintesi Triage Bug Jira` |
 
 ## Section Contracts
 

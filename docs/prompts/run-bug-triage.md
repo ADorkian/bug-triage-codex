@@ -7,6 +7,7 @@ Run the Jira bug triage workflow for this repository with the following rules:
 - Follow `docs/routing-rules.md`, `docs/output-schema.md`, and `docs/constraints.md`
 - Use Atlassian MCP in read-only mode unless write mode has been explicitly enabled
 - Draft external actions to markdown files first
+- Write result artifacts in Italian by default unless this run prompt explicitly requests English
 - For each bug, end in exactly one of these statuses: `READY`, `WAITING_REPORTER`, `WAITING_TECH_DB`
 - If prerequisites are missing, draft only the reporter comment for the missing information and stop on that bug
 - If a customer DB is required and Azure does not already have it, draft only the tech DB request and stop on that bug

@@ -10,6 +10,25 @@ This document defines the router behavior for every triage run.
 
 ## State Routing
 
+Use source routing before starting:
+- ME-* => Tarko
+- TP-* => Vulki
+
+If I provide an issue key, select the source from the prefix.
+If I provide a project name, use that source directly.
+If both are present and they conflict, stop and report the ambiguity.
+Do not mix Tarko and Vulki in the same run unless explicitly requested.
+
+Source resolution order:
+1. explicit project name in the user request
+2. issue key prefix
+3. configured default source
+
+Once the source is resolved:
+- use only that source for board lookup, issue reading, and triage
+- if source = Tarko, use the configured Tarko board/filter
+- if source = Vulki, use the configured Vulki board/filter
+
 1. `jira_intake` extracts the working record.
 2. `completeness_check` returns exactly one verdict:
    - `MISSING_INFO`
@@ -49,3 +68,6 @@ Recommended execution order should prioritize:
 2. higher severity within `READY`
 3. Jira priority order as a tie-breaker
 4. blocked bugs after actionable bugs
+
+## Routing
+Follow the Jira source routing rules in `docs/routing-rules.md`.
