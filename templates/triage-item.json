@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "triage-item.json",
+  "title": "Triage Item",
+  "description": "Template for a single triage artifact produced by the bug-triage-codex pipeline.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "issue_key",
+    "triaged_at",
+    "pipeline_run_id",
+    "issue",
+    "triage"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "issue_key": {
+      "type": "string",
+      "pattern": "^[A-Z]+-[0-9]+$",
+      "examples": ["AKERON-123"]
+    },
+    "triaged_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "pipeline_run_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "issue": {
+      "type": "object",
+      "required": ["summary", "description", "issue_type", "priority", "status", "reporter", "created_at", "updated_at"],
+      "properties": {
+        "summary":     { "type": "string" },
+        "description": { "type": "string" },
+        "issue_type":  { "type": "string", "examples": ["Bug", "Task", "Story"] },
+        "priority":    { "type": "string", "examples": ["Blocker", "Critical", "Major", "Minor", "Trivial"] },
+        "status":      { "type": "string" },
+        "reporter":    { "type": "string" },
+        "assignee":    { "type": ["string", "null"] },
+        "components":  { "type": "array", "items": { "type": "string" } },
+        "labels":      { "type": "array", "items": { "type": "string" } },
+        "created_at":  { "type": "string", "format": "date-time" },
+        "updated_at":  { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "triage": {
+      "type": "object",
+      "required": ["severity", "priority", "affected_component", "estimated_effort", "root_cause_hypothesis", "confidence", "reasoning"],
+      "properties": {
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low", "trivial"]
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["P0", "P1", "P2", "P3", "P4"]
+        },
+        "affected_component":    { "type": "string" },
+        "estimated_effort": {
+          "type": "string",
+          "enum": ["XS", "S", "M", "L", "XL"]
+        },
+        "root_cause_hypothesis": { "type": "string" },
+        "confidence": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "reasoning": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "code_context": {
+      "type": "object",
+      "properties": {
+        "relevant_files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "reason"],
+            "properties": {
+              "path":   { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          }
+        },
+        "relevant_tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "reason"],
+            "properties": {
+              "path":   { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          }
+        },
+        "recent_commits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["sha", "message"],
+            "properties": {
+              "sha":     { "type": "string" },
+              "message": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "enum": ["pass", "pass_with_warnings", "fail"]
+        },
+        "recommendation": {
+          "type": "string",
+          "enum": ["approve", "revise", "reject"]
+        },
+        "blocking_issues": { "type": "array", "items": { "type": "string" } },
+        "warnings":        { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,28 @@
+# Codex Configuration
+
+[codex]
+version = "1.0"
+name = "bug-triage-codex"
+description = "AI-powered bug triage pipeline for Akeron Jira issues"
+
+[pipeline]
+entry_agent = "triage-router"
+
+[settings]
+artifacts_dir = "artifacts"
+templates_dir = "templates"
+docs_dir = "docs"
+
+[agents]
+triage-router  = ".codex/agents/triage-router.toml"
+jira-reader    = ".codex/agents/jira-reader.toml"
+triage-analyst = ".codex/agents/triage-analyst.toml"
+repo-explorer  = ".codex/agents/repo-explorer.toml"
+fix-planner    = ".codex/agents/fix-planner.toml"
+implementer    = ".codex/agents/implementer.toml"
+validator      = ".codex/agents/validator.toml"
+
+[jira]
+base_url_env   = "JIRA_BASE_URL"
+auth_token_env = "JIRA_API_TOKEN"
+user_email_env = "JIRA_USER_EMAIL"
