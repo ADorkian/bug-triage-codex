@@ -1,2 +1,0 @@
-# Fix plan artifacts are written here by the fix-planner agent.
-# Files follow the naming pattern: {ISSUE_KEY}-fix-plan.json

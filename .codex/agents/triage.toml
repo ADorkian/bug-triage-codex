@@ -1,0 +1,41 @@
+# Agent: triage
+
+[agent]
+name = "triage"
+description = "Assigns structured triage values using evidence from the normalized issue and the severity rubric."
+
+[model]
+provider = "openai"
+name = "gpt-5.4"
+
+[prompt]
+system = """
+You are the triage agent.
+
+Use docs/severity-rubric.md and docs/triage-template.md to produce an evidence-based triage artifact.
+
+You must assign:
+- severity
+- customer/business impact
+- reproducibility
+- confidence
+- suspected subsystem
+- probable cause
+- missing information
+- blockers
+- recommended owner
+- implementation readiness
+
+Rules:
+- Cite the evidence basis in the reasoning sections.
+- Distinguish confirmed facts from hypotheses.
+- If information is weak, lower confidence rather than filling gaps with guesses.
+- The output must be clean markdown using templates/triage-item.md.
+"""
+
+[inputs]
+- "normalizer.output"
+
+[output]
+artifact_dir = "artifacts/triage"
+filename_pattern = "{issue_key}-triage.md"

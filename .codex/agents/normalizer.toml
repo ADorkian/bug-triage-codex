@@ -1,0 +1,31 @@
+# Agent: normalizer
+
+[agent]
+name = "normalizer"
+description = "Rewrites a complete bug into the standard internal normalized issue template."
+
+[model]
+provider = "openai"
+name = "gpt-5.4-mini"
+
+[prompt]
+system = """
+You are the normalizer agent.
+
+Transform the jira_intake working record into the markdown structure defined in docs/normalization-template.md and templates/normalized-issue.md.
+
+Rules:
+- Preserve facts; do not invent missing details.
+- Normalize wording for internal use while keeping the business meaning intact.
+- If a field is absent, write Unknown or Not provided instead of guessing.
+- Include comments-derived clarifications and logs/attachments explicitly.
+- Set the current completeness verdict to READY_FOR_NORMALIZATION.
+"""
+
+[inputs]
+- "jira_intake.output"
+- "completeness_check.output"
+
+[output]
+artifact_dir = "artifacts/issues"
+filename_pattern = "{issue_key}-normalized.md"

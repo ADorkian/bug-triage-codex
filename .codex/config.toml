@@ -1,28 +1,111 @@
-# Codex Configuration
+# Project-scoped Codex configuration for a draft-first Jira triage workflow.
 
 [codex]
-version = "1.0"
+version = "2.0"
 name = "bug-triage-codex"
-description = "AI-powered bug triage pipeline for Akeron Jira issues"
+description = "Codex-native multi-agent Jira bug triage workflow for the first 8 kanban bugs."
+entry_agent = "router"
 
-[pipeline]
-entry_agent = "triage-router"
+[run]
+issue_limit = 8
+issue_type = "Bug"
+summary_artifact = "artifacts/triage/triage-summary.md"
 
-[settings]
-artifacts_dir = "artifacts"
-templates_dir = "templates"
-docs_dir = "docs"
+[selection]
+# Prefer a saved JQL because it keeps the 8-bug intake deterministic across runs.
+kanban_jql_env = "JIRA_KANBAN_JQL"
+# Optional fallback when your Jira integration is board-aware.
+board_id_env = "JIRA_BOARD_ID"
+# Keep the order stable: highest Jira priority first, then board rank, then oldest created item.
+priority_order = ["priority DESC", "Rank ASC", "created ASC"]
+
+[artifacts]
+root = "artifacts"
+issues_dir = "artifacts/issues"
+triage_dir = "artifacts/triage"
+prompts_dir = "artifacts/prompts"
+actions_dir = "artifacts/actions"
 
 [agents]
-triage-router  = ".codex/agents/triage-router.toml"
-jira-reader    = ".codex/agents/jira-reader.toml"
-triage-analyst = ".codex/agents/triage-analyst.toml"
-repo-explorer  = ".codex/agents/repo-explorer.toml"
-fix-planner    = ".codex/agents/fix-planner.toml"
-implementer    = ".codex/agents/implementer.toml"
-validator      = ".codex/agents/validator.toml"
+max_threads = 4
+max_depth = 2
+
+[agents.router]
+description = "Orchestrates the run, processes exactly 8 bugs, applies routing rules, and enforces the final READY gate."
+config_file = ".codex/agents/router.toml"
+
+[agents.jira_intake]
+description = "Reads Jira issue fields, comments, attachments, and linked context into a structured working record."
+config_file = ".codex/agents/jira-intake.toml"
+
+[agents.completeness_check]
+description = "Checks whether the bug has version, repro steps, and logs when needed; determines if customer DB access blocks progress."
+config_file = ".codex/agents/completeness-check.toml"
+
+[agents.action_drafter]
+description = "Generates draft Jira comments to reporters and draft tech issues for customer DB requests."
+config_file = ".codex/agents/action-drafter.toml"
+
+[agents.normalizer]
+description = "Rewrites complete issues into the standard normalized bug template."
+config_file = ".codex/agents/normalizer.toml"
+
+[agents.triage]
+description = "Assigns severity, impact, reproducibility, confidence, suspected area, probable cause, blockers, and owner recommendation."
+config_file = ".codex/agents/triage.toml"
+
+[agents.solution_planner]
+description = "Produces the smallest defensible technical resolution plan, risks, rollback, and test strategy."
+config_file = ".codex/agents/solution-planner.toml"
+
+[agents.prompt_generator]
+description = "Converts the solution plan into a reusable Codex implementation prompt."
+config_file = ".codex/agents/prompt-generator.toml"
+
+[agents.critic]
+description = "Rejects weak plans or prompts and enforces the final readiness gate."
+config_file = ".codex/agents/critic.toml"
+
+[sandbox]
+# Safe default for a draft-first workflow. Codex may edit local artifact files, but external writes stay disabled.
+mode = "workspace-write"
+network_access = true
+shell_access = true
+
+[approval]
+# External writes are off by default even if an MCP server technically supports them.
+default_mode = "read_only"
+allow_external_writes = false
+require_human_review_before_external_write = true
 
 [jira]
-base_url_env   = "JIRA_BASE_URL"
-auth_token_env = "JIRA_API_TOKEN"
-user_email_env = "JIRA_USER_EMAIL"
+site_url_env = "JIRA_SITE_URL"
+project_key_env = "JIRA_PROJECT_KEY"
+reporter_mention_style = "jira-account-or-display-name"
+read_only_default = true
+
+# Required MCP: replace the server_name value with the Atlassian MCP server configured in your Codex environment.
+[mcp.atlassian]
+required = true
+server_name = "CHANGE_ME_ATLASSIAN_MCP"
+default_mode = "read_only"
+write_enable_env = "CODEX_ENABLE_ATLASSIAN_WRITE"
+confluence_enabled = true
+
+# Optional MCP: use for linked PRs, repo ownership, or commit context when Jira points to code changes.
+[mcp.github]
+required = false
+server_name = "CHANGE_ME_GITHUB_MCP"
+default_mode = "read_only"
+
+# Optional MCP: use to confirm whether a requested customer DB already exists on Azure before drafting a DB request.
+[mcp.azure]
+required = false
+server_name = "CHANGE_ME_AZURE_MCP"
+default_mode = "read_only"
+
+# Optional MCP: use to pull failing pipeline context or historical test results.
+[mcp.ci]
+required = false
+server_name = "CHANGE_ME_CI_MCP"
+default_mode = "read_only"

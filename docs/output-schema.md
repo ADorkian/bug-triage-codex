@@ -1,141 +1,52 @@
 # Output Schema
 
-This document defines the canonical JSON schemas for every artifact produced by the `bug-triage-codex` pipeline.
+All artifacts in this repository are markdown. Filenames are deterministic and keyed by Jira issue key.
 
-All artifacts are written to the `artifacts/` directory tree.  File naming follows the pattern `{ISSUE_KEY}-{artifact-type}.json`.
+## Per-Bug Artifacts
 
----
+| File | Required When | Purpose |
+|---|---|---|
+| `artifacts/issues/{ISSUE_KEY}-normalized.md` | Final status is `READY` | Canonical normalized bug record |
+| `artifacts/triage/{ISSUE_KEY}-triage.md` | Final status is `READY` | Structured triage decision |
+| `artifacts/issues/{ISSUE_KEY}-solution-plan.md` | Final status is `READY` | Concrete technical resolution plan |
+| `artifacts/prompts/{ISSUE_KEY}-codex-prompt.md` | Final status is `READY` | Reusable implementation prompt for a follow-on Codex run |
+| `artifacts/actions/{ISSUE_KEY}-jira-comment.md` | Final status is `WAITING_REPORTER` | Draft Jira comment asking only for missing information |
+| `artifacts/actions/{ISSUE_KEY}-tech-db-request.md` | Final status is `WAITING_TECH_DB` | Draft technical request for customer DB availability or download |
 
-## 1. Triage Artifact (`artifacts/triage/{ISSUE_KEY}.json`)
+## Run-Level Artifact
 
-Produced by `triage-router` after all sub-agents have completed.
+| File | Required | Purpose |
+|---|---|---|
+| `artifacts/triage/triage-summary.md` | Every run | Summary of the 8 processed bugs, statuses, severity/readiness ranking, execution order, and blockers |
 
-```jsonc
-{
-  // Metadata
-  "schema_version": "1.0",
-  "issue_key":      "AKERON-123",
-  "triaged_at":     "2025-01-15T10:30:00Z",
-  "pipeline_run_id":"<UUID>",
+## Minimum Required Headers
 
-  // Raw issue data (from jira-reader)
-  "issue": {
-    "summary":     "<string>",
-    "description": "<string>",
-    "issue_type":  "<Bug|Task|Story|...>",
-    "priority":    "<Blocker|Critical|Major|Minor|Trivial>",
-    "status":      "<string>",
-    "reporter":    "<string>",
-    "assignee":    "<string | null>",
-    "components":  ["<string>"],
-    "labels":      ["<string>"],
-    "created_at":  "<ISO-8601>",
-    "updated_at":  "<ISO-8601>"
-  },
+The following level-1 markdown headers are mandatory:
 
-  // Triage classification (from triage-analyst)
-  "triage": {
-    "severity":              "<critical|high|medium|low|trivial>",
-    "priority":              "<P0|P1|P2|P3|P4>",
-    "affected_component":    "<string>",
-    "estimated_effort":      "<XS|S|M|L|XL>",
-    "root_cause_hypothesis": "<string>",
-    "confidence":            "<high|medium|low>",
-    "reasoning":             "<string>"
-  },
+| Artifact | Required H1 |
+|---|---|
+| Normalized issue | `# {ISSUE_KEY} Normalized Issue` |
+| Triage | `# {ISSUE_KEY} Triage` |
+| Solution plan | `# {ISSUE_KEY} Solution Plan` |
+| Codex prompt | `# Codex Implementation Prompt: {ISSUE_KEY}` |
+| Jira comment draft | `# Draft Jira Comment: {ISSUE_KEY}` |
+| Tech DB request draft | `# Draft Tech DB Request: {ISSUE_KEY}` |
+| Run summary | `# Jira Bug Triage Summary` |
 
-  // Code context summary (from repo-explorer)
-  "code_context": {
-    "relevant_files":  [{"path": "<string>", "reason": "<string>"}],
-    "relevant_tests":  [{"path": "<string>", "reason": "<string>"}],
-    "recent_commits":  [{"sha": "<string>", "message": "<string>"}]
-  },
+## Section Contracts
 
-  // Validation result (from validator, omitted if not run)
-  "validation": {
-    "verdict":         "<pass|pass_with_warnings|fail>",
-    "recommendation":  "<approve|revise|reject>",
-    "blocking_issues": ["<string>"],
-    "warnings":        ["<string>"]
-  }
-}
-```
+- Normalized issue files must match `docs/normalization-template.md` and `templates/normalized-issue.md`.
+- Triage files must match `docs/triage-template.md` and `templates/triage-item.md`.
+- Solution plans must match `templates/solution-plan.md` and include the definition of done from `docs/definition-of-done.md`.
+- Codex prompts must match `docs/prompt-template.md` and `templates/codex-prompt.md`.
+- Action drafts must use the matching file under `templates/`.
 
----
+## Summary Requirements
 
-## 2. Fix Plan (`artifacts/fix-plans/{ISSUE_KEY}-fix-plan.json`)
+`artifacts/triage/triage-summary.md` must include:
 
-Produced by `fix-planner`.
-
-```jsonc
-{
-  "schema_version": "1.0",
-  "issue_key":      "AKERON-123",
-  "plan_id":        "<UUID>",
-  "created_at":     "<ISO-8601>",
-  "summary":        "<one-sentence description of the fix>",
-  "steps": [
-    {
-      "step":        1,
-      "file":        "<repo-relative path>",
-      "action":      "<modify|create|delete|rename>",
-      "description": "<what to change and why>",
-      "test_impact": "<describe tests to add or update, or 'none'>"
-    }
-  ],
-  "risks":            ["<string>"],
-  "alternatives":     ["<string>"],
-  "estimated_effort": "<XS|S|M|L|XL>"
-}
-```
-
----
-
-## 3. Validation Report (`artifacts/validation/{ISSUE_KEY}-validation.json`)
-
-Produced by `validator`.
-
-```jsonc
-{
-  "schema_version": "1.0",
-  "issue_key":      "AKERON-123",
-  "plan_id":        "<UUID>",
-  "validated_at":   "<ISO-8601>",
-  "verdict":        "<pass|pass_with_warnings|fail>",
-  "checks": [
-    {
-      "name":    "<check name>",
-      "result":  "<pass|warn|fail>",
-      "details": "<string>"
-    }
-  ],
-  "blocking_issues": ["<string>"],
-  "warnings":        ["<string>"],
-  "recommendation":  "<approve|revise|reject>"
-}
-```
-
----
-
-## 4. Enumerated Values
-
-### severity
-`critical` | `high` | `medium` | `low` | `trivial`
-
-### priority
-`P0` | `P1` | `P2` | `P3` | `P4`
-
-### estimated_effort
-`XS` | `S` | `M` | `L` | `XL`
-
-### confidence
-`high` | `medium` | `low`
-
-### verdict
-`pass` | `pass_with_warnings` | `fail`
-
-### recommendation
-`approve` | `revise` | `reject`
-
-### action (fix plan step)
-`modify` | `create` | `delete` | `rename`
+1. The 8 Jira bug keys in the order fetched from Jira
+2. The final status of each bug
+3. A severity and readiness ranking
+4. The recommended execution order
+5. Blocked bugs and the reason each bug is blocked

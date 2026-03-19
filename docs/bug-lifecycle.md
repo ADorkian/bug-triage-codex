@@ -1,83 +1,40 @@
 # Bug Lifecycle
 
-This document describes the end-to-end lifecycle of a bug as it moves through the `bug-triage-codex` pipeline.
-
----
+This project uses a small set of business-visible states and an internal readiness loop.
 
 ## State Diagram
 
 ```
-REPORTED
-   │
-   ▼
-INGESTED ──────────────────────────────────────┐
-   │  (jira-reader fetches & normalises)        │
-   ▼                                            │
-CONTEXT_GATHERED                               │
-   │  (repo-explorer finds relevant code)       │
-   ▼                                            │
-TRIAGED                                        │
-   │  (triage-analyst scores severity etc.)     │
-   ▼                                            │
-   ├─[severity < medium]──────────────────► TRIAGED_LOW_PRIORITY
-   │                                          (artifact written; no fix plan)
-   │
-   ▼
-PLANNED
-   │  (fix-planner produces fix plan)
-   ▼
-DRAFTED
-   │  (implementer produces proposed diff)
-   ▼
-VALIDATED
-   │  (validator checks plan + diff)
-   │
-   ├─[verdict=fail]──────────────────────► NEEDS_REVISION
-   │                                         (triage-router notifies team)
-   │
-   ▼
-READY_FOR_REVIEW
-   │  (human engineer reviews artifacts)
-   ▼
-   ├─[approved]──────────────────────────► IMPLEMENTATION_IN_PROGRESS
-   │                                         (engineer applies diff or creates PR)
-   └─[rejected]──────────────────────────► CLOSED_WONT_FIX
+START
+  -> jira_intake
+  -> completeness_check
+
+  -> MISSING_INFO       -> action_drafter(comment_to_reporter) -> WAITING_REPORTER
+  -> NEEDS_CUSTOMER_DB  -> action_drafter(tech_db_request)     -> WAITING_TECH_DB
+  -> READY_FOR_NORMALIZATION
+       -> normalizer
+       -> triage
+       -> solution_planner
+       -> prompt_generator
+       -> critic
+       -> READY
 ```
 
----
+## Business States
 
-## State Descriptions
-
-| State | Description |
+| State | Meaning |
 |---|---|
-| **REPORTED** | Bug exists in Jira but has not yet entered the pipeline. |
-| **INGESTED** | `jira-reader` has fetched and normalised the issue. |
-| **CONTEXT_GATHERED** | `repo-explorer` has identified relevant files and tests. |
-| **TRIAGED** | `triage-analyst` has produced a severity/priority classification. |
-| **TRIAGED_LOW_PRIORITY** | Terminal state for low/trivial bugs — no automated fix plan is generated; issue is placed in backlog. |
-| **PLANNED** | `fix-planner` has produced a step-by-step fix plan. |
-| **DRAFTED** | `implementer` has produced a proposed diff. |
-| **VALIDATED** | `validator` has reviewed the plan and diff. |
-| **NEEDS_REVISION** | Validation failed — the pipeline notifies the team for manual intervention. |
-| **READY_FOR_REVIEW** | All pipeline stages passed — artifacts are ready for a human engineer. |
-| **IMPLEMENTATION_IN_PROGRESS** | An engineer is applying the proposed fix. |
-| **CLOSED_WONT_FIX** | Issue closed without a fix (out of scope, not reproducible, etc.). |
+| `WAITING_REPORTER` | The issue is blocked on missing or unclear version, repro steps, or logs. |
+| `WAITING_TECH_DB` | The issue is blocked on customer DB availability because realistic reproduction is not feasible locally. |
+| `READY` | The issue is actionable and all required artifacts exist with a passing critic verdict. |
 
----
+## Internal States
 
-## Artifacts Produced Per Lifecycle Step
+| State | Meaning |
+|---|---|
+| `READY_FOR_NORMALIZATION` | `completeness_check` confirmed the bug is complete enough for internal normalization. |
+| `critic rework` | Internal only. If the critic finds weak reasoning, the router may re-run planner and prompt generation within the configured depth budget. |
 
-| Step | Agent | Artifact written |
-|---|---|---|
-| INGESTED → CONTEXT_GATHERED | `jira-reader` | *(in-memory, no file)* |
-| CONTEXT_GATHERED → TRIAGED | `repo-explorer` | *(in-memory, no file)* |
-| TRIAGED | `triage-analyst` | `artifacts/triage/{KEY}.json` (partial) |
-| PLANNED | `fix-planner` | `artifacts/fix-plans/{KEY}-fix-plan.json` |
-| VALIDATED | `validator` | `artifacts/validation/{KEY}-validation.json` |
-| READY_FOR_REVIEW | `triage-router` | `artifacts/triage/{KEY}.json` (complete) + `artifacts/triage/{KEY}-summary.md` |
+## Re-Runs
 
----
-
-## Re-Triage
-
-A bug may be re-triaged at any point by running the pipeline again with the same issue key.  The pipeline overwrites existing artifacts (keeping the previous version under a timestamped filename for auditing).
+The router is intended to be rerun against the same board or filter. Because filenames are deterministic, the latest run overwrites the prior logical output unless your team adds an archival layer.

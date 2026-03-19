@@ -1,59 +1,49 @@
 # Plans
 
-This document tracks the implementation roadmap for `bug-triage-codex`.
+This document tracks the current rollout plan for the workshop-ready, Codex-native Jira triage scaffold.
 
----
+## Phase 1 - Repository Initialization
 
-## Phase 1 – Foundation (current)
-
-**Goal:** Establish the repository structure, agent definitions, documentation, and templates so the pipeline can be exercised end-to-end on a single Jira issue.
+Goal: establish the multi-agent workflow, templates, safety rules, and artifact structure for 8-bug kanban triage.
 
 | Task | Status |
 |---|---|
-| Repository skeleton (dirs, placeholder files) | ✅ Done |
-| `.codex/config.toml` | ✅ Done |
-| Agent TOML definitions (all 7 agents) | ✅ Done |
-| Triage rubric (`docs/triage-rubric.md`) | ✅ Done |
-| Output schema (`docs/output-schema.md`) | ✅ Done |
-| Bug lifecycle doc (`docs/bug-lifecycle.md`) | ✅ Done |
-| Constraints doc (`docs/constraints.md`) | ✅ Done |
-| Run prompt (`docs/prompts/run-bug-triage.md`) | ✅ Done |
-| JSON template (`templates/triage-item.json`) | ✅ Done |
-| Markdown template (`templates/triage-summary.md`) | ✅ Done |
+| Replace legacy pipeline with 9-agent state-based workflow | Done |
+| Create project-scoped `.codex/config.toml` with MCP placeholders | Done |
+| Create router, intake, completeness, drafting, normalization, triage, planning, prompt, and critic agent configs | Done |
+| Add normalization, triage, severity, prompt, routing, and definition-of-done docs | Done |
+| Add markdown templates for normalized issue, triage, solution plan, prompt, and operational drafts | Done |
+| Align README, AGENTS, lifecycle, constraints, and output schema docs | Done |
+| Create artifact directory skeleton for issues, triage, prompts, and actions | Done |
 
----
+## Phase 2 - Environment Wiring
 
-## Phase 2 – Integration
-
-**Goal:** Wire up Jira API authentication and validate the pipeline against real issues.
+Goal: connect the scaffold to real Jira and optional support systems without changing the draft-first default.
 
 | Task | Status |
 |---|---|
-| Jira OAuth / PAT credential handling | ⬜ Pending |
-| End-to-end test against a sandbox Jira project | ⬜ Pending |
-| CI workflow to run triage on new Jira webhook events | ⬜ Pending |
+| Configure Atlassian MCP server name and authentication | Pending |
+| Set target kanban JQL or board configuration | Pending |
+| Configure optional Azure availability check for customer DBs | Pending |
+| Configure optional GitHub/repo and CI MCPs | Pending |
+| Run first live 8-bug dry run against a safe Jira source | Pending |
 
----
+## Phase 3 - Hardening
 
-## Phase 3 – Hardening
-
-**Goal:** Make the system production-ready.
+Goal: make repeated workshop/demo runs deterministic and easy to audit.
 
 | Task | Status |
 |---|---|
-| Rate-limit handling for Jira API calls | ⬜ Pending |
-| Retry / fallback logic in triage-router | ⬜ Pending |
-| Metrics and observability hooks | ⬜ Pending |
-| Human-in-the-loop review step before implementer runs | ⬜ Pending |
-| Automated tests for each agent in isolation | ⬜ Pending |
+| Add regression checks for markdown artifact completeness | Pending |
+| Add retry strategy for critic rework loop | Pending |
+| Add archival/versioning strategy for repeated triage runs | Pending |
+| Add smoke validation for MCP availability before a run starts | Pending |
 
----
-
-## Phase 4 – Enhancements
+## Phase 4 - Extensions
 
 | Idea | Notes |
 |---|---|
-| Slack / Teams notifications for high-severity bugs | Notify on-call team immediately |
-| Historical trend analysis | Use past triage artifacts to refine severity scoring |
-| Auto-label Jira issues after triage | Write labels back via Jira API |
-| Support GitHub Issues as an additional source | Extend jira-reader to a generic issue-reader |
+| Scheduled morning intake | Run the router against the configured kanban automatically |
+| New-bug trigger | Kick off triage when a Jira bug enters a chosen board column |
+| Ownership enrichment | Pull owner suggestions from repo metadata or CodeScene |
+| Auto-post mode | Optional future step once write-enabled governance is accepted |
