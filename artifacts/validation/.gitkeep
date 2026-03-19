@@ -1,0 +1,2 @@
+# Validation report artifacts are written here by the validator agent.
+# Files follow the naming pattern: {ISSUE_KEY}-validation.json

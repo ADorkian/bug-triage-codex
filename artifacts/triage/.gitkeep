@@ -1,0 +1,2 @@
+# Triage artifacts are written here by the triage-router agent.
+# Files follow the naming pattern: {ISSUE_KEY}.json and {ISSUE_KEY}-summary.md
