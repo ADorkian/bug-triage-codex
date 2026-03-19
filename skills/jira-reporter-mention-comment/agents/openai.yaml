@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jira Reporter Mention Comment"
+  short_description: "Scrive commenti Jira con tag reporter"
+  default_prompt: "Use $jira-reporter-mention-comment to draft a Jira comment that tags the reporter and asks for the missing requirements."

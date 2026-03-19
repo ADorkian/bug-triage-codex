@@ -5,9 +5,9 @@
 ## What The Project Does
 
 - Reads the first 8 Jira bugs in `To do` from the target kanban in priority order
-- Verifies the required prerequisites: product version, reproducible steps, and logs when they are needed
+- Collects raw Jira evidence first, then verifies the required prerequisites: product version, reproducible steps, and logs when they are needed
 - Drafts a Jira reporter comment when information is missing
-- Drafts a tech issue for customer DB download when local reproduction depends on customer data that is not already available on Azure
+- Drafts a tech issue for customer DB download when local reproduction depends on customer data that is not already available on Azure, asks for explicit confirmation before Jira creation, and then links the created TECH issue back to the source bug
 - Normalizes complete issues, triages them, produces a concrete solution plan, and generates a reusable Codex implementation prompt
 - Writes uniform markdown artifacts under `artifacts/`
 - Writes result artifacts in Italian by default, unless a specific run prompt explicitly requests English
@@ -17,6 +17,8 @@
 The router follows this state machine:
 
 `START -> jira_intake -> completeness_check -> [WAITING_REPORTER | WAITING_TECH_DB | normalizer -> triage -> solution_planner -> prompt_generator -> critic -> READY]`
+
+Operationally, the router first fetches the first 8 eligible bugs in Jira priority order, then fans out per-bug triage to parallel sub-agents, and finally merges all outcomes back into one summary while preserving the original fetch order.
 
 See `AGENTS.md` and `docs/routing-rules.md` for the full routing contract.
 
@@ -77,6 +79,7 @@ The exact filenames and required sections are documented in `docs/output-schema.
 Start every run from the `router` role. The router:
 
 - selects exactly 8 bugs
+- launches one parallel sub-agent per fetched bug, up to the configured concurrency limit
 - preserves kanban priority order
 - applies the prerequisite checks before any deeper analysis
 - stops blocked bugs at the correct waiting state

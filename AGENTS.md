@@ -14,7 +14,7 @@ START
     -> WAITING_REPORTER
 
   if NEEDS_CUSTOMER_DB:
-    -> action_drafter(tech_db_request)
+    -> action_drafter(tech_db_request -> confirm -> create/link if allowed)
     -> WAITING_TECH_DB
 
   if READY_FOR_NORMALIZATION:
@@ -28,15 +28,17 @@ START
 
 The `router` agent is the entry point. It selects exactly 8 bugs in priority order, runs each bug through the state machine, and writes a run summary.
 
+After selecting the 8 bugs, the router should fan out one sub-agent per bug and process those bug workflows in parallel, capped by the configured concurrency limit. The router still owns source selection, fetch order, result merging, and final summary ordering.
+
 ## Agent Roles
 
 | Agent | Config | Responsibility |
 |---|---|---|
-| `router` | `.codex/agents/router.toml` | Orchestrates the run, enforces the 8-bug limit, applies routing rules, and merges outputs. |
-| `jira_intake` | `.codex/agents/jira-intake.toml` | Reads Jira fields, comments, attachments, and linked context; extracts the operational facts needed downstream. |
-| `completeness_check` | `.codex/agents/completeness-check.toml` | Verifies product version, repro steps, and logs; decides `READY_FOR_NORMALIZATION`, `MISSING_INFO`, or `NEEDS_CUSTOMER_DB`. |
-| `action_drafter` | `.codex/agents/action-drafter.toml` | Produces draft Jira comments to reporters or draft tech DB request issues. Never posts automatically in default mode. |
-| `normalizer` | `.codex/agents/normalizer.toml` | Rewrites a complete bug into the internal normalized issue template. |
+| `router` | `.codex/agents/router.toml` | Orchestrates the run, enforces the 8-bug limit, dispatches one parallel sub-agent per bug after intake selection, and merges outputs in original Jira order. |
+| `jira_intake` | `.codex/agents/jira-intake.toml` | Reads Jira fields, comments, attachments, and linked context; extracts raw evidence in a structured record without making completeness decisions. |
+| `completeness_check` | `.codex/agents/completeness-check.toml` | Verifies product version, repro steps, and logs; returns only `MISSING_INFO`, `NEEDS_CUSTOMER_DB`, or `READY_FOR_NORMALIZATION`. |
+| `action_drafter` | `.codex/agents/action-drafter.toml` | Produces downstream drafts by invoking the appropriate skill for reporter comments or TECH DB requests. Never posts automatically in default mode. |
+| `normalizer` | `.codex/agents/normalizer.toml` | Invokes the normalization skill and returns the normalized issue structure for READY bugs. |
 | `triage` | `.codex/agents/triage.toml` | Assigns severity, impact, reproducibility, confidence, suspected area, probable cause, blockers, and owner recommendation. |
 | `solution_planner` | `.codex/agents/solution-planner.toml` | Builds the smallest defensible technical plan, including risks, rollback, tests, assumptions, and definition of done. |
 | `prompt_generator` | `.codex/agents/prompt-generator.toml` | Converts the approved plan into a reusable Codex implementation prompt. |
@@ -48,7 +50,7 @@ The `router` agent is the entry point. It selects exactly 8 bugs in priority ord
 |---|---|
 | `READY` | All prerequisites are satisfied, the bug is normalized and triaged, the solution plan is concrete, the implementation prompt is usable, and the critic passed. |
 | `WAITING_REPORTER` | The issue is missing or unclear on version, repro steps, or logs. A draft Jira comment exists and asks only for the missing information. |
-| `WAITING_TECH_DB` | Local reproduction depends on a customer database that is not already available on Azure. A draft tech issue exists requesting DB download or support. |
+| `WAITING_TECH_DB` | Local reproduction depends on a customer database that is not already available on Azure. A TECH draft exists; the Jira TECH issue is created and linked only after explicit confirmation and with write enabled. |
 
 ## MCP Safety
 
@@ -70,7 +72,7 @@ The `router` agent is the entry point. It selects exactly 8 bugs in priority ord
 - `artifacts/issues/{ISSUE_KEY}-solution-plan.md` for each `READY` bug
 - `artifacts/prompts/{ISSUE_KEY}-codex-prompt.md` for each `READY` bug
 - `artifacts/actions/{ISSUE_KEY}-jira-comment.md` for each `WAITING_REPORTER` bug
-- `artifacts/actions/{ISSUE_KEY}-tech-db-request.md` for each `WAITING_TECH_DB` bug
+- `artifacts/actions/{ISSUE_KEY}-tech-db-request.md` for each `WAITING_TECH_DB` bug, including the draft TECH issue content and, when confirmed and created, the linked Jira reference
 - `artifacts/triage/triage-summary.md` for every run
 
 ## READY Gate
@@ -156,7 +158,8 @@ Quando l'utente chiede di fare triage di un bug:
    - non pubblicare nulla
 5. se serve il database cliente:
    - prepara una bozza di richiesta tech
-   - non creare davvero la issue
+   - chiedi conferma esplicita prima di creare davvero la issue Jira TECH
+   - se confermato e write abilitato, crea la issue e la collega al bug in triage
 6. se i prerequisiti sono completi:
    - normalizza la issue
    - produci triage strutturato
@@ -167,7 +170,7 @@ Quando l'utente chiede di fare triage di un bug:
 
 - modalita read-only di default
 - non scrivere commenti Jira
-- non creare issue
+- non creare issue senza conferma esplicita dell'utente e senza write abilitato
 - non inventare informazioni mancanti
 
 ## Interpretazione prompt brevi

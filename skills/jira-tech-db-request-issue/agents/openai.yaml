@@ -1,0 +1,6 @@
+interface:
+  display_name: "Jira Tech DB Request Issue"
+  short_description: "Genera bozza issue TECH per DB cliente"
+  default_prompt: "Use $jira-tech-db-request-issue to draft a Jira TECH issue requesting customer DB availability or download for a blocked bug."
+policy:
+  allow_implicit_invocation: true

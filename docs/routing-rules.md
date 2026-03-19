@@ -9,6 +9,14 @@ This document defines the router behavior for every triage run.
 3. Do not skip a bug just because it looks incomplete; the completeness path is part of the workflow.
 4. The effective board/filter query must include `status = "To do"`.
 
+## Parallel Execution
+
+1. The router owns source resolution and the initial fetch of the first 8 bugs.
+2. Once the 8 bugs are fetched, the router should launch one sub-agent per bug and process those bug workflows in parallel.
+3. Parallelism must be capped by the configured concurrency limit in `.codex/config.toml`.
+4. Parallel execution must not change the canonical fetched order of the 8 bugs.
+5. Result merging, ranking, and summary generation remain the responsibility of the router.
+
 ## State Routing
 
 Use source routing before starting:
@@ -50,7 +58,7 @@ Once the source is resolved:
    - `NEEDS_CUSTOMER_DB`
    - `READY_FOR_NORMALIZATION`
 3. `MISSING_INFO` routes to `action_drafter(comment_to_reporter)` and ends as `WAITING_REPORTER`.
-4. `NEEDS_CUSTOMER_DB` routes to `action_drafter(tech_db_request)` and ends as `WAITING_TECH_DB`.
+4. `NEEDS_CUSTOMER_DB` routes to `action_drafter(tech_db_request)`; the drafter prepares the TECH request draft, asks for explicit confirmation before any Jira write-back, and creates/links the TECH Jira issue only when confirmation and write mode are both available, then ends as `WAITING_TECH_DB`.
 5. `READY_FOR_NORMALIZATION` routes to `normalizer -> triage -> solution_planner -> prompt_generator -> critic`.
 
 ## Decision Precedence

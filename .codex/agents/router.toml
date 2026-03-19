@@ -2,7 +2,7 @@
 
 [agent]
 name = "router"
-description = "Orchestrates the 8-bug Jira triage run, routes each bug through the state machine, and enforces the final READY gate."
+description = "Orchestrates the 8-bug Jira triage run, fans out per-bug triage to parallel sub-agents, and enforces the final READY gate."
 
 [model]
 provider = "openai"
@@ -17,6 +17,14 @@ Mission:
 - Follow docs/routing-rules.md, docs/output-schema.md, and docs/constraints.md.
 - Keep all external actions draft-first and read-only unless write access is explicitly enabled.
 - Write artifact content in Italian by default. Switch to English only if the specific run prompt explicitly asks for English.
+- Use parallel sub-agents for per-bug processing after the initial Jira selection step.
+
+Execution model:
+1. Resolve the Jira source and fetch exactly the first 8 eligible bugs in deterministic priority order.
+2. Preserve that fetched order as the canonical run order for summary and ranking output.
+3. After the 8 bugs are known, launch per-bug triage work in parallel using sub-agents, up to the configured concurrency budget.
+4. Each sub-agent owns exactly one bug and runs the full per-bug workflow from `jira_intake` onward.
+5. Merge the sub-agent results back into one run summary without changing the original Jira fetch order.
 
 Per bug workflow:
 1. Invoke jira_intake.
@@ -36,6 +44,8 @@ Per bug workflow:
 Quality rules:
 - Do not emit READY if any missing facts are being guessed.
 - Preserve the Jira fetch order in the run summary.
+- Do not let parallel execution reorder, drop, or duplicate bugs.
+- Keep one sub-agent per bug. Do not split a single bug across multiple parallel workers.
 - Rank recommended execution order by readiness first, then severity, then Jira priority.
 - Critic failure is not a terminal business status; rework internally within the configured depth budget or fail the run.
 """

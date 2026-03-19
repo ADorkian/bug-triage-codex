@@ -39,8 +39,15 @@ override_language_examples = ["en", "english"]
 max_threads = 4
 max_depth = 2
 
+[parallelism]
+# After the router fetches the first 8 Jira bugs in deterministic order, it may fan out
+# one sub-agent per bug up to this concurrency limit. Final summary ordering must still
+# follow the original Jira fetch order.
+per_bug_subagents = true
+max_parallel_bugs = 8
+
 [agents.router]
-description = "Orchestrates the run, processes exactly 8 bugs, applies routing rules, and enforces the final READY gate."
+description = "Orchestrates the run, fetches exactly 8 bugs, dispatches per-bug triage to parallel sub-agents, and enforces the final READY gate."
 config_file = ".codex/agents/router.toml"
 
 [agents.jira_intake]
@@ -48,15 +55,15 @@ description = "Reads Jira issue fields, comments, attachments, and linked contex
 config_file = ".codex/agents/jira-intake.toml"
 
 [agents.completeness_check]
-description = "Checks whether the bug has version, repro steps, and logs when needed; determines if customer DB access blocks progress."
+description = "Checks whether the bug has version, repro steps, and logs when needed; returns only MISSING_INFO, NEEDS_CUSTOMER_DB, or READY_FOR_NORMALIZATION."
 config_file = ".codex/agents/completeness-check.toml"
 
 [agents.action_drafter]
-description = "Generates draft Jira comments to reporters and draft tech issues for customer DB requests."
+description = "Generates downstream operational drafts based on completeness_check, including reporter comments and TECH DB requests."
 config_file = ".codex/agents/action-drafter.toml"
 
 [agents.normalizer]
-description = "Rewrites complete issues into the standard normalized bug template."
+description = "Invokes the normalization skill and emits the normalized bug structure."
 config_file = ".codex/agents/normalizer.toml"
 
 [agents.triage]

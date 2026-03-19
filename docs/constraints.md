@@ -19,6 +19,8 @@ These constraints apply to every agent in `bug-triage-codex`.
 | C-06 | Logs are only mandatory when they are materially needed to understand or resolve the bug. |
 | C-07 | If required information is missing or unclear, draft a reporter comment that asks only for the missing items. |
 | C-08 | If local reproduction depends on a customer DB because configuration complexity or data volume is too high, draft a tech DB request unless Azure already has the DB available. |
+| C-08a | A real Jira TECH issue for customer DB access may be created only after explicit user confirmation and only when write mode is enabled in both MCP permissions and `.codex/config.toml`. |
+| C-08b | After a TECH issue is created for a triaged bug, link it back to the originating Jira bug and record the created key or URL in the local draft artifact. |
 
 ## Output Quality
 

@@ -10,7 +10,7 @@ START
   -> completeness_check
 
   -> MISSING_INFO       -> action_drafter(comment_to_reporter) -> WAITING_REPORTER
-  -> NEEDS_CUSTOMER_DB  -> action_drafter(tech_db_request)     -> WAITING_TECH_DB
+  -> NEEDS_CUSTOMER_DB  -> action_drafter(tech_db_request -> user_confirmation -> jira_create_and_link_if_allowed) -> WAITING_TECH_DB
   -> READY_FOR_NORMALIZATION
        -> normalizer
        -> triage
@@ -25,7 +25,7 @@ START
 | State | Meaning |
 |---|---|
 | `WAITING_REPORTER` | The issue is blocked on missing or unclear version, repro steps, or logs. |
-| `WAITING_TECH_DB` | The issue is blocked on customer DB availability because realistic reproduction is not feasible locally. |
+| `WAITING_TECH_DB` | The issue is blocked on customer DB availability because realistic reproduction is not feasible locally. A TECH DB request draft always exists; the Jira TECH issue is created and linked only after explicit user confirmation and with write permissions enabled. |
 | `READY` | The issue is actionable and all required artifacts exist with a passing critic verdict. |
 
 ## Internal States

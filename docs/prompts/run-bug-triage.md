@@ -10,7 +10,7 @@ Run the Jira bug triage workflow for this repository with the following rules:
 - Write result artifacts in Italian by default unless this run prompt explicitly requests English
 - For each bug, end in exactly one of these statuses: `READY`, `WAITING_REPORTER`, `WAITING_TECH_DB`
 - If prerequisites are missing, draft only the reporter comment for the missing information and stop on that bug
-- If a customer DB is required and Azure does not already have it, draft only the tech DB request and stop on that bug
+- If a customer DB is required and Azure does not already have it, draft the TECH DB request first, ask for explicit user confirmation before any Jira creation, and only create/link the TECH issue when confirmation and write mode are both available
 - If the bug is complete, produce normalized issue, triage, solution plan, and Codex implementation prompt artifacts, then require a critic pass before marking it `READY`
 - Generate `artifacts/triage/triage-summary.md` with the fetched issue order, final status per bug, severity/readiness ranking, recommended execution order, and blocked reasons
 

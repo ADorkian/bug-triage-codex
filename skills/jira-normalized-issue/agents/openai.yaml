@@ -1,0 +1,6 @@
+interface:
+  display_name: "Jira Normalized Issue"
+  short_description: "Normalizza issue Jira in markdown"
+  default_prompt: "Use $jira-normalized-issue to produce a normalized Jira issue from collected issue evidence."
+policy:
+  allow_implicit_invocation: true

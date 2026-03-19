@@ -11,7 +11,7 @@ All artifacts in this repository are markdown. Filenames are deterministic and k
 | `artifacts/issues/{ISSUE_KEY}-solution-plan.md` | Final status is `READY` | Concrete technical resolution plan |
 | `artifacts/prompts/{ISSUE_KEY}-codex-prompt.md` | Final status is `READY` | Reusable implementation prompt for a follow-on Codex run |
 | `artifacts/actions/{ISSUE_KEY}-jira-comment.md` | Final status is `WAITING_REPORTER` | Draft Jira comment asking only for missing information |
-| `artifacts/actions/{ISSUE_KEY}-tech-db-request.md` | Final status is `WAITING_TECH_DB` | Draft technical request for customer DB availability or download |
+| `artifacts/actions/{ISSUE_KEY}-tech-db-request.md` | Final status is `WAITING_TECH_DB` | Draft technical request for customer DB availability or download, plus created TECH issue reference when confirmation/write-back succeeded |
 
 ## Run-Level Artifact
 
@@ -40,6 +40,7 @@ The following level-1 markdown headers are mandatory:
 - Solution plans must match `templates/solution-plan.md` and include the definition of done from `docs/definition-of-done.md`.
 - Codex prompts must match `docs/prompt-template.md` and `templates/codex-prompt.md`.
 - Action drafts must use the matching file under `templates/`.
+- `WAITING_TECH_DB` artifacts should also record whether user confirmation is still pending, the proposed Jira TECH payload, and any created Jira key/URL plus the triage-link outcome when write-back occurred.
 
 ## Summary Requirements
 
