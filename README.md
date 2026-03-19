@@ -1,10 +1,10 @@
 # bug-triage-codex
 
-`bug-triage-codex` is a reusable Codex project for Jira bug triage. It processes exactly the first 8 bugs from a configured kanban source, checks whether each bug is actionable, drafts the right operational follow-up when it is not, and produces normalized markdown artifacts for every bug that is genuinely ready for engineering work.
+`bug-triage-codex` is a reusable Codex project for Jira bug triage. It processes exactly the first 8 bugs in `To do` from a configured kanban source, checks whether each bug is actionable, drafts the right operational follow-up when it is not, and produces normalized markdown artifacts for every bug that is genuinely ready for engineering work.
 
 ## What The Project Does
 
-- Reads the first 8 Jira bugs from the target kanban in priority order
+- Reads the first 8 Jira bugs in `To do` from the target kanban in priority order
 - Verifies the required prerequisites: product version, reproducible steps, and logs when they are needed
 - Drafts a Jira reporter comment when information is missing
 - Drafts a tech issue for customer DB download when local reproduction depends on customer data that is not already available on Azure

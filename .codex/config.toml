@@ -16,6 +16,10 @@ summary_artifact = "artifacts/triage/triage-summary.md"
 kanban_jql_env = "JIRA_KANBAN_JQL"
 # Optional fallback when your Jira integration is board-aware.
 board_id_env = "JIRA_BOARD_ID"
+# Only bugs currently in the board column/status "To do" are eligible for intake.
+required_status = "To do"
+# Apply this JQL clause whenever the effective board/filter query is built or validated.
+required_status_jql = "status = \"To do\""
 # Keep the order stable: highest Jira priority first, then board rank, then oldest created item.
 priority_order = ["priority DESC", "Rank ASC", "created ASC"]
 

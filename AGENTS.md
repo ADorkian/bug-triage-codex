@@ -1,6 +1,6 @@
 # Agents
 
-`bug-triage-codex` is a Codex-native Jira bug triage project. It reads exactly the first 8 bugs from a configured kanban source, checks prerequisites, drafts the right operational action when information is missing, and only produces a normalized issue, triage, solution plan, and Codex implementation prompt when the bug is truly ready.
+`bug-triage-codex` is a Codex-native Jira bug triage project. It reads exactly the first 8 bugs in `To do` from a configured kanban source, checks prerequisites, drafts the right operational action when information is missing, and only produces a normalized issue, triage, solution plan, and Codex implementation prompt when the bug is truly ready.
 
 ## Workflow
 
@@ -96,37 +96,51 @@ A bug may be marked `READY` only if:
 
 Before any Jira action, resolve the source:
 
-- `ME-*` => `Tarko`
-- `TP-*` => `Vulki`
+### Product -> Jira project mapping
+
+| Product name | Jira project key | Board |
+|---|---|---|
+| Vulki | `TP` | [TP board 73](https://support-akeron.atlassian.net/jira/software/c/projects/TP/boards/73?quickFilter=434) |
+| Tarko | `ME` | [ME board 63](https://support-akeron.atlassian.net/jira/software/c/projects/ME/boards/63) |
+
+### From issue key
+- `TP-*` -> Vulki (project `TP`, board 73 with quick filter 434)
+- `ME-*` -> Tarko (project `ME`, board 63)
+
+### From product name
+- User says "vulki" -> use `https://support-akeron.atlassian.net/jira/software/c/projects/TP/boards/73?quickFilter=434`
+- User says "tarko" -> use `https://support-akeron.atlassian.net/jira/software/c/projects/ME/boards/63`
 
 Rules:
-- If the user gives an issue key, use the prefix.
-- If the user gives a project name, use that directly.
+- If the user gives an issue key, derive the product from the prefix.
+- If the user gives a product name, resolve the Jira project key from the table above.
 - If both are present and conflict, stop and report ambiguity.
 - Never mix Tarko and Vulki in the same run unless explicitly requested.
-
 
 # Jira Bug Triage Agent
 
 Questo progetto serve per fare triage automatico dei bug Jira.
 
 ## Routing sorgenti
-- TP-* => Vulki
-- ME-* => Tarko
+
+- Vulki -> progetto Jira `TP` (issue key `TP-*`, board `73`, quick filter `434`): `https://support-akeron.atlassian.net/jira/software/c/projects/TP/boards/73?quickFilter=434`
+- Tarko -> progetto Jira `ME` (issue key `ME-*`, board `63`): `https://support-akeron.atlassian.net/jira/software/c/projects/ME/boards/63`
 
 ## Regole generali
-- Se l’utente chiede di fare triage di un bug o del primo bug di una board, identifica prima la source corretta.
-- “Vulki” significa usare solo la board/filter configurata per Vulki.
-- “Tarko” significa usare solo la board/filter configurata per Tarko.
+
+- Se l'utente chiede di fare triage di un bug o del primo bug di una board, identifica prima la source corretta.
+- "Vulki" significa usare solo `TP board 73` con `quickFilter=434`.
+- "Tarko" significa usare solo `ME board 63`.
 - Non mischiare bug di board diverse nello stesso run, salvo richiesta esplicita.
 
 ## Comportamento standard
-Quando l’utente chiede di fare triage di un bug:
+
+Quando l'utente chiede di fare triage di un bug:
 1. leggi il bug dalla source corretta
 2. raccogli:
    - issue key
    - titolo
-   - priorità
+   - priorita
    - reporter
    - versione prodotto
    - descrizione
@@ -150,16 +164,19 @@ Quando l’utente chiede di fare triage di un bug:
    - genera un prompt Codex per implementazione
 
 ## Vincoli
-- modalità read-only di default
+
+- modalita read-only di default
 - non scrivere commenti Jira
 - non creare issue
 - non inventare informazioni mancanti
 
 ## Interpretazione prompt brevi
-Se l’utente scrive:
-- “triage first bug in vulki board”
+
+Se l'utente scrive:
+- "triage first bug in vulki board"
+
 allora devi:
 - selezionare la source Vulki
-- leggere solo il primo bug disponibile secondo l’ordinamento configurato
+- leggere solo il primo bug disponibile secondo l'ordinamento configurato
 - analizzarlo seguendo il workflow standard
 - restituire output strutturato in markdown

@@ -4,30 +4,45 @@ This document defines the router behavior for every triage run.
 
 ## Issue Selection
 
-1. Read exactly the first 8 Jira issues of type `Bug` from the configured kanban source.
+1. Read exactly the first 8 Jira issues of type `Bug` from the configured kanban source, restricted to status `To do`.
 2. Use the configured priority order from `.codex/config.toml`.
 3. Do not skip a bug just because it looks incomplete; the completeness path is part of the workflow.
+4. The effective board/filter query must include `status = "To do"`.
 
 ## State Routing
 
 Use source routing before starting:
-- ME-* => Tarko
-- TP-* => Vulki
 
-If I provide an issue key, select the source from the prefix.
-If I provide a project name, use that source directly.
+### Product -> Jira project mapping
+
+| Product | Jira project | Issue prefix | Jira board |
+|---|---|---|---|
+| Vulki | `TP` | `TP-*` | [TP board 73](https://support-akeron.atlassian.net/jira/software/c/projects/TP/boards/73?quickFilter=434) |
+| Tarko | `ME` | `ME-*` | [ME board 63](https://support-akeron.atlassian.net/jira/software/c/projects/ME/boards/63) |
+
+### From issue key
+- `TP-*` -> Vulki (project TP, board 73 with quick filter 434)
+- `ME-*` -> Tarko (project ME, board 63)
+
+### From product name
+- "vulki" -> navigate to `https://support-akeron.atlassian.net/jira/software/c/projects/TP/boards/73?quickFilter=434`
+- "tarko" -> navigate to `https://support-akeron.atlassian.net/jira/software/c/projects/ME/boards/63`
+
+If I provide an issue key, derive the product from the prefix and select the corresponding Jira project.
+If I provide a product name (vulki/tarko), resolve the Jira project key from the table above.
 If both are present and they conflict, stop and report the ambiguity.
 Do not mix Tarko and Vulki in the same run unless explicitly requested.
 
 Source resolution order:
-1. explicit project name in the user request
-2. issue key prefix
+1. explicit product name in the user request -> mapped Jira project and exact board URL
+2. issue key prefix -> mapped product
 3. configured default source
 
 Once the source is resolved:
 - use only that source for board lookup, issue reading, and triage
-- if source = Tarko, use the configured Tarko board/filter
-- if source = Vulki, use the configured Vulki board/filter
+- if product = Tarko -> use board 63: `https://support-akeron.atlassian.net/jira/software/c/projects/ME/boards/63`
+- if product = Vulki -> use board 73 with quick filter 434: `https://support-akeron.atlassian.net/jira/software/c/projects/TP/boards/73?quickFilter=434`
+- do not substitute another TP or ME board unless the user explicitly asks for a different board
 
 1. `jira_intake` extracts the working record.
 2. `completeness_check` returns exactly one verdict:
@@ -70,4 +85,5 @@ Recommended execution order should prioritize:
 4. blocked bugs after actionable bugs
 
 ## Routing
+
 Follow the Jira source routing rules in `docs/routing-rules.md`.

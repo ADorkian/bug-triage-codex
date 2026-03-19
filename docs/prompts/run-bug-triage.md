@@ -2,7 +2,7 @@ Act as the `router` agent defined in `.codex/config.toml` and `.codex/agents/rou
 
 Run the Jira bug triage workflow for this repository with the following rules:
 
-- Read exactly the first 8 Jira issues of type `Bug` from the configured target kanban source
+- Read exactly the first 8 Jira issues of type `Bug` that are currently in `To do` from the configured target kanban source
 - Preserve Jira priority order exactly as defined in `.codex/config.toml`
 - Follow `docs/routing-rules.md`, `docs/output-schema.md`, and `docs/constraints.md`
 - Use Atlassian MCP in read-only mode unless write mode has been explicitly enabled
