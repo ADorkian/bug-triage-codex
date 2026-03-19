@@ -1,0 +1,14 @@
+{
+  "vulki": {
+    "baseUrl": "http://localhost:4200",
+    "username": "e2e-full",
+    "password": "e2e-full@123",
+    "startPath": "/"
+  },
+  "tarko": {
+    "baseUrl": "<set-tarko-base-url>",
+    "username": "<set-tarko-username>",
+    "password": "<set-tarko-password>",
+    "startPath": "/"
+  }
+}

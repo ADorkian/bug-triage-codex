@@ -36,7 +36,7 @@ allow_explicit_prompt_override = true
 override_language_examples = ["en", "english"]
 
 [agents]
-max_threads = 4
+max_threads = 5
 max_depth = 2
 
 [parallelism]
@@ -73,6 +73,10 @@ config_file = ".codex/agents/triage.toml"
 [agents.solution_planner]
 description = "Produces the smallest defensible technical resolution plan, risks, rollback, and test strategy."
 config_file = ".codex/agents/solution-planner.toml"
+
+[agents.e2e_reproducer]
+description = "Determines whether a bug is suitable for browser E2E reproduction, optionally runs Playwright MCP in parallel, and writes a docs report."
+config_file = ".codex/agents/e2e-reproducer.toml"
 
 [agents.prompt_generator]
 description = "Converts the solution plan into a reusable Codex implementation prompt."

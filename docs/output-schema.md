@@ -1,6 +1,6 @@
 # Output Schema
 
-All artifacts in this repository are markdown. Filenames are deterministic and keyed by Jira issue key. Artifact prose is written in Italian by default, unless a specific run prompt explicitly requests English.
+Primary result documents in this repository are markdown. Supporting E2E metadata may also be written as JSON under `artifacts/repro/`. Filenames are deterministic and keyed by Jira issue key when applicable. Artifact prose is written in Italian by default, unless a specific run prompt explicitly requests English.
 
 ## Per-Bug Artifacts
 
@@ -12,6 +12,8 @@ All artifacts in this repository are markdown. Filenames are deterministic and k
 | `artifacts/prompts/{ISSUE_KEY}-codex-prompt.md` | Final status is `READY` | Reusable implementation prompt for a follow-on Codex run |
 | `artifacts/actions/{ISSUE_KEY}-jira-comment.md` | Final status is `WAITING_REPORTER` | Draft Jira comment asking only for missing information |
 | `artifacts/actions/{ISSUE_KEY}-tech-db-request.md` | Final status is `WAITING_TECH_DB` | Draft technical request for customer DB availability or download, plus created TECH issue reference when confirmation/write-back succeeded |
+| `docs/e2e-repro/{ISSUE_KEY}-playwright-mcp.md` | When `e2e_reproducer` evaluates the bug | Browser E2E applicability verdict and, when possible, Playwright MCP reproduction result |
+| `artifacts/repro/{ISSUE_KEY}/notes.json` | When `e2e_reproducer` evaluates or attempts the bug | Machine-readable E2E notes and outcome metadata |
 
 ## Run-Level Artifact
 
@@ -31,6 +33,7 @@ The following level-1 markdown headers are mandatory:
 | Codex prompt | `# Prompt Di Implementazione Codex: {ISSUE_KEY}` |
 | Jira comment draft | `# Bozza Commento Jira: {ISSUE_KEY}` |
 | Tech DB request draft | `# Bozza Richiesta DB Tecnico: {ISSUE_KEY}` |
+| E2E report | `# {ISSUE_KEY} Verifica E2E Playwright MCP` |
 | Run summary | `# Sintesi Triage Bug Jira` |
 
 ## Section Contracts
@@ -41,6 +44,7 @@ The following level-1 markdown headers are mandatory:
 - Codex prompts must match `docs/prompt-template.md` and `templates/codex-prompt.md`.
 - Action drafts must use the matching file under `templates/`.
 - `WAITING_TECH_DB` artifacts should also record whether user confirmation is still pending, the proposed Jira TECH payload, and any created Jira key/URL plus the triage-link outcome when write-back occurred.
+- E2E reports must match `docs/e2e-repro-template.md` and `templates/e2e-repro.md`.
 
 ## Summary Requirements
 

@@ -38,7 +38,9 @@ Per bug workflow:
    - write artifacts/actions/{ISSUE_KEY}-tech-db-request.md
    - set final status to WAITING_TECH_DB
 5. If verdict = READY_FOR_NORMALIZATION:
-   - invoke normalizer -> triage -> solution_planner -> prompt_generator -> critic
+   - invoke normalizer -> triage -> solution_planner
+   - invoke e2e_reproducer in parallel when the issue is plausibly browser-reproducible or the user explicitly requested E2E validation
+   - invoke prompt_generator -> critic
    - only set final status to READY if all required READY artifacts exist and critic passes
 
 Quality rules:
@@ -48,6 +50,7 @@ Quality rules:
 - Keep one sub-agent per bug. Do not split a single bug across multiple parallel workers.
 - Rank recommended execution order by readiness first, then severity, then Jira priority.
 - Critic failure is not a terminal business status; rework internally within the configured depth budget or fail the run.
+- e2e_reproducer must first decide whether the issue is actually reproducible through browser E2E; if not applicable or blocked, it must document that verdict instead of guessing a flow.
 """
 
 [workflow]
@@ -59,7 +62,7 @@ terminal_statuses = ["READY", "WAITING_REPORTER", "WAITING_TECH_DB"]
 entry = ["jira_intake", "completeness_check"]
 if_missing_info = ["action_drafter"]
 if_needs_customer_db = ["action_drafter"]
-if_ready = ["normalizer", "triage", "solution_planner", "prompt_generator", "critic"]
+if_ready = ["normalizer", "triage", "solution_planner", "e2e_reproducer", "prompt_generator", "critic"]
 
 [output]
 summary_file = "artifacts/triage/triage-summary.md"

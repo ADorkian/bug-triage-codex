@@ -1,0 +1,13 @@
+interface:
+  display_name: "Jira Playwright MCP Repro"
+  short_description: "Tarko/Vulki browser repro via MCP"
+  default_prompt: "Use $jira-playwright-mcp-repro to try to reproduce a Tarko or Vulki Jira bug with the URL and credentials I provide."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "playwright"
+      description: "Playwright MCP for browser automation and screenshots"
+
+policy:
+  allow_implicit_invocation: true

@@ -21,6 +21,7 @@ START
     -> normalizer
     -> triage
     -> solution_planner
+    -> e2e_reproducer (in parallel when the issue is browser-reproducible or the user explicitly asks for E2E verification)
     -> prompt_generator
     -> critic
     -> READY
@@ -41,6 +42,7 @@ After selecting the 8 bugs, the router should fan out one sub-agent per bug and 
 | `normalizer` | `.codex/agents/normalizer.toml` | Invokes the normalization skill and returns the normalized issue structure for READY bugs. |
 | `triage` | `.codex/agents/triage.toml` | Assigns severity, impact, reproducibility, confidence, suspected area, probable cause, blockers, and owner recommendation. |
 | `solution_planner` | `.codex/agents/solution-planner.toml` | Builds the smallest defensible technical plan, including risks, rollback, tests, assumptions, and definition of done. |
+| `e2e_reproducer` | `.codex/agents/e2e-reproducer.toml` | Decides whether the bug is suitable for browser E2E reproduction, optionally runs Playwright MCP in parallel, and writes an E2E result document under `docs`. |
 | `prompt_generator` | `.codex/agents/prompt-generator.toml` | Converts the approved plan into a reusable Codex implementation prompt. |
 | `critic` | `.codex/agents/critic.toml` | Validates evidence quality, consistency, completeness, and readiness before any bug is marked `READY`. |
 
@@ -73,6 +75,7 @@ After selecting the 8 bugs, the router should fan out one sub-agent per bug and 
 - `artifacts/prompts/{ISSUE_KEY}-codex-prompt.md` for each `READY` bug
 - `artifacts/actions/{ISSUE_KEY}-jira-comment.md` for each `WAITING_REPORTER` bug
 - `artifacts/actions/{ISSUE_KEY}-tech-db-request.md` for each `WAITING_TECH_DB` bug, including the draft TECH issue content and, when confirmed and created, the linked Jira reference
+- `docs/e2e-repro/{ISSUE_KEY}-playwright-mcp.md` for each bug evaluated by `e2e_reproducer`
 - `artifacts/triage/triage-summary.md` for every run
 
 ## READY Gate
@@ -85,10 +88,13 @@ A bug may be marked `READY` only if:
 4. The prompt does not guess missing facts
 5. `critic` passes with no blocking evidence gaps
 
+The E2E document is supportive evidence by default and does not block `READY` unless the specific run explicitly requires browser verification.
+
 ## Reference Docs
 
 - Routing and decision rules: `docs/routing-rules.md`
 - Output contracts and filenames: `docs/output-schema.md`
+- E2E verification format: `docs/e2e-repro-template.md`
 - Normalized issue format: `docs/normalization-template.md`
 - Triage fields and rubric: `docs/triage-template.md`, `docs/severity-rubric.md`
 - Plan and prompt structure: `docs/definition-of-done.md`, `docs/prompt-template.md`
