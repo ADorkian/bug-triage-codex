@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bug Triage Workflow</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --paper: rgba(255, 251, 243, 0.88);
+      --paper-strong: #fffdf8;
+      --ink: #1f2933;
+      --muted: #6c6f70;
+      --line: rgba(101, 78, 53, 0.18);
+      --teal: #0f766e;
+      --teal-soft: rgba(15, 118, 110, 0.12);
+      --orange: #dd6b20;
+      --orange-soft: rgba(221, 107, 32, 0.12);
+      --red: #b42318;
+      --red-soft: rgba(180, 35, 24, 0.12);
+      --blue: #1d4ed8;
+      --blue-soft: rgba(29, 78, 216, 0.12);
+      --shadow: 0 20px 50px rgba(48, 39, 27, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI Variable Text", "Aptos", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 32%),
+        radial-gradient(circle at top right, rgba(221, 107, 32, 0.14), transparent 28%),
+        linear-gradient(180deg, #f7f1e7 0%, #efe5d6 100%);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 32px auto 56px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 40px;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(255, 249, 238, 0.92)),
+        linear-gradient(135deg, rgba(15, 118, 110, 0.05), rgba(221, 107, 32, 0.04));
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -90px -110px auto;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(15, 118, 110, 0.18), transparent 66%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(31, 41, 51, 0.06);
+      font-size: 0.86rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.06;
+    }
+
+    h1 {
+      margin-top: 20px;
+      max-width: 10ch;
+      font-size: clamp(2.7rem, 6vw, 5rem);
+    }
+
+    .hero p {
+      max-width: 780px;
+      margin: 18px 0 0;
+      font-size: 1.08rem;
+      line-height: 1.7;
+      color: #39444d;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.95fr);
+      gap: 28px;
+      align-items: end;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 41, 51, 0.1);
+      background: rgba(255, 255, 255, 0.68);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .summary-card {
+      padding: 22px;
+      border-radius: var(--radius-xl);
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .summary-card h2 {
+      font-size: 1.5rem;
+    }
+
+    .summary-card ul {
+      margin: 18px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 22px;
+      margin-top: 24px;
+    }
+
+    .panel {
+      padding: 28px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .panel h2 {
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      margin-bottom: 10px;
+    }
+
+    .panel > p {
+      margin: 0 0 22px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .span-12 {
+      grid-column: span 12;
+    }
+
+    .span-7 {
+      grid-column: span 7;
+    }
+
+    .span-5 {
+      grid-column: span 5;
+    }
+
+    .flow {
+      display: grid;
+      gap: 14px;
+    }
+
+    .flow-step {
+      position: relative;
+      padding: 18px 20px 18px 66px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--paper-strong);
+    }
+
+    .flow-step::before {
+      content: attr(data-step);
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .flow-step strong {
+      display: block;
+      font-size: 1.02rem;
+      margin-bottom: 6px;
+    }
+
+    .flow-step p {
+      margin: 0;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .branch-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .branch {
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--paper-strong);
+    }
+
+    .branch h3 {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+
+    .branch p {
+      margin: 0;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .status.ready {
+      color: var(--teal);
+      background: var(--teal-soft);
+    }
+
+    .status.reporter {
+      color: var(--orange);
+      background: var(--orange-soft);
+    }
+
+    .status.tech {
+      color: var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .status.blocked {
+      color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .agent-card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: var(--paper-strong);
+    }
+
+    .agent-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 6px;
+    }
+
+    .agent-card p {
+      margin: 0;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .agent-type {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(31, 41, 51, 0.06);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .parallel-card {
+      padding: 22px;
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(15, 118, 110, 0.2);
+      background:
+        linear-gradient(135deg, rgba(15, 118, 110, 0.1), rgba(255, 255, 255, 0.9)),
+        var(--paper-strong);
+    }
+
+    .parallel-card h3 {
+      font-size: 1.45rem;
+      margin-bottom: 10px;
+    }
+
+    .parallel-card p,
+    .parallel-card li,
+    .quick-list li {
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .parallel-card ul,
+    .quick-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .quick-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .references {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .references a {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      font-size: 0.94rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .branch-grid,
+      .agent-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .span-7,
+      .span-5 {
+        grid-column: span 12;
+      }
+
+      .hero {
+        padding: 28px;
+      }
+
+      .panel {
+        padding: 22px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100vw - 20px, 100%);
+        margin-top: 10px;
+      }
+
+      h1 {
+        max-width: none;
+      }
+
+      .hero,
+      .panel {
+        border-radius: 22px;
+      }
+
+      .flow-step {
+        padding-left: 58px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Bug Triage Codex</div>
+          <h1>Come funziona davvero il triage</h1>
+          <p>
+            Questa pagina spiega in modo semplice cosa fanno gli agenti, in che ordine lavorano
+            e quando un bug diventa davvero pronto. L'idea e' pratica: prima raccogliere fatti,
+            poi capire se manca qualcosa, solo dopo produrre analisi e piano tecnico.
+          </p>
+          <div class="pill-row">
+            <div class="pill">Legge 8 bug per run</div>
+            <div class="pill">Solo stato To do</div>
+            <div class="pill">Jira read-only di default</div>
+            <div class="pill">Artefatti in italiano</div>
+            <div class="pill">E2E opzionale in parallelo</div>
+          </div>
+        </div>
+        <aside class="summary-card">
+          <h2>Riassunto in una frase</h2>
+          <ul>
+            <li>Il router prende i bug giusti.</li>
+            <li>Gli agenti verificano se il bug e' chiaro e riproducibile.</li>
+            <li>Se mancano dati si ferma e prepara la richiesta giusta.</li>
+            <li>Se il bug e' completo produce triage, piano e prompt per lo sviluppo.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="layout">
+      <article class="panel span-7">
+        <h2>Procedura semplice</h2>
+        <p>Questa e' la sequenza operativa, letta da sinistra a destra come succede davvero nel run.</p>
+        <div class="flow">
+          <div class="flow-step" data-step="1">
+            <strong>Router</strong>
+            <p>Capisce se il bug appartiene a Vulki o Tarko, sceglie la board corretta e prende i primi bug validi in ordine.</p>
+          </div>
+          <div class="flow-step" data-step="2">
+            <strong>Jira intake</strong>
+            <p>Legge campi Jira, descrizione, commenti, allegati e ogni evidenza utile, senza ancora decidere se il bug e' buono o no.</p>
+          </div>
+          <div class="flow-step" data-step="3">
+            <strong>Completeness check</strong>
+            <p>Controlla se ci sono versione, passi di riproduzione, errore osservato e log sufficienti per andare avanti.</p>
+          </div>
+          <div class="flow-step" data-step="4">
+            <strong>Decisione</strong>
+            <p>Qui il flusso si divide: manca informazione, serve DB cliente, oppure il bug e' pronto per l'analisi completa.</p>
+          </div>
+          <div class="flow-step" data-step="5">
+            <strong>Analisi completa</strong>
+            <p>Solo se il bug e' davvero completo partono normalizzazione, triage tecnico, piano di soluzione, prompt Codex e controllo finale.</p>
+          </div>
+        </div>
+      </article>
+
+      <aside class="panel span-5">
+        <h2>Regola base</h2>
+        <p>Il sistema non indovina. Se non trova fatti sufficienti, non forza il bug verso READY.</p>
+        <ul class="quick-list">
+          <li>Non posta commenti Jira da solo in modalita standard.</li>
+          <li>Non crea issue TECH senza conferma esplicita e permessi di scrittura.</li>
+          <li>Non inventa step UI, dati cliente o stack trace mancanti.</li>
+          <li>Se il bug e' debole, produce una richiesta precisa invece di un'analisi fragile.</li>
+        </ul>
+      </aside>
+
+      <article class="panel span-12">
+        <h2>Cosa puo' succedere dopo il controllo completezza</h2>
+        <p>Il triage non ha un solo finale. Ha tre uscite operative molto concrete.</p>
+        <div class="branch-grid">
+          <section class="branch">
+            <div class="status reporter">Waiting Reporter</div>
+            <h3>Mancano informazioni</h3>
+            <p>Se il ticket non spiega bene come riprodurre il problema, viene generata una bozza di commento Jira per il reporter. Si chiede solo quello che manca.</p>
+          </section>
+          <section class="branch">
+            <div class="status tech">Waiting Tech DB</div>
+            <h3>Serve il database cliente</h3>
+            <p>Se il bug dipende da dati reali non presenti localmente o su Azure, viene preparata una richiesta tecnica per ottenere o agganciare il DB corretto.</p>
+          </section>
+          <section class="branch">
+            <div class="status ready">Ready</div>
+            <h3>Il bug e' pronto</h3>
+            <p>Se ci sono evidenze sufficienti, il sistema costruisce il pacchetto completo: issue normalizzata, triage, piano di soluzione, prompt Codex e verifica finale.</p>
+          </section>
+        </div>
+      </article>
+
+      <article class="panel span-12">
+        <h2>Agenti spiegati in modo umano</h2>
+        <p>Ogni agente ha un compito piccolo e preciso. Questo evita confusione e rende il risultato piu' affidabile.</p>
+        <div class="agent-grid">
+          <section class="agent-card">
+            <div class="agent-type">Ingresso</div>
+            <h3>router</h3>
+            <p>E' il coordinatore. Sceglie la source corretta, prende i bug giusti, lancia il flusso per ogni bug e mette insieme la sintesi finale.</p>
+          </section>
+          <section class="agent-card">
+            <div class="agent-type">Raccolta</div>
+            <h3>jira_intake</h3>
+            <p>Fa il lavoro di lettura: campi Jira, commenti, allegati e contesto. Non giudica, raccoglie.</p>
+          </section>
+          <section class="agent-card">
+            <div class="agent-type">Filtro</div>
+            <h3>completeness_check</h3>
+            <p>Decide se il bug e' abbastanza chiaro. E' l'agente che evita di sprecare tempo su ticket incompleti.</p>
+          </section>
+          <section class="agent-card">
+            <div class="agent-type">Azione</div>
+            <h3>action_drafter</h3>
+            <p>Scrive la bozza operativa corretta: commento al reporter oppure richiesta DB tecnico.</p>
+          </section>
+          <section class="agent-card">
+            <div class="agent-type">Struttura</div>
+            <h3>normalizer</h3>
+            <p>Riorganizza il bug in un formato interno uniforme, cosi' tutte le analisi successive partono da una base pulita.</p>
+          </section>
+          <section class="agent-card">
+            <div class="agent-type">Valutazione</div>
+            <h3>triage</h3>
+            <p>Assegna severita, impatto, riproducibilita, area sospetta, blocchi e owner consigliato.</p>
+          </section>
+          <section class="agent-card">
+            <div class="agent-type">Piano</div>
+            <h3>solution_planner</h3>
+            <p>Costruisce il piano tecnico minimo difendibile: dove guardare, rischi, rollback, test e definizione di done.</p>
+          </section>
+          <section class="agent-card">
+            <div class="agent-type">Esecuzione Guidata</div>
+            <h3>prompt_generator</h3>
+            <p>Trasforma il piano in un prompt Codex riusabile per la fase di implementazione.</p>
+          </section>
+          <section class="agent-card">
+            <div class="agent-type">Controllo Qualita</div>
+            <h3>critic</h3>
+            <p>Fa l'ultimo controllo: verifica che il pacchetto sia coerente, completo e senza buchi evidenti.</p>
+          </section>
+          <section class="agent-card">
+            <div class="agent-type">Browser E2E</div>
+            <h3>e2e_reproducer</h3>
+            <p>Capisce se il bug ha senso provarlo via browser. Se e' applicabile e Playwright MCP e' disponibile, prova la riproduzione in parallelo e scrive il risultato.</p>
+          </section>
+        </div>
+      </article>
+
+      <article class="panel span-7">
+        <h2>Dove entra l'E2E</h2>
+        <p>L'agente E2E non gira sempre. Prima decide se ha senso provarci davvero.</p>
+        <div class="parallel-card">
+          <h3>e2e_reproducer lavora in parallelo solo quando serve</h3>
+          <ul>
+            <li>Se il bug e' browser/UI e gli step sono chiari, puo' partire una verifica Playwright MCP.</li>
+            <li>Se il bug e' backend-only, DB-only o non osservabile da browser, viene marcato come non applicabile.</li>
+            <li>Se il flusso UI esiste ma mancano credenziali, ambiente, dati o step precisi, viene marcato come bloccato.</li>
+            <li>Il suo report aiuta il triage, ma non sostituisce le evidenze Jira di base.</li>
+          </ul>
+        </div>
+      </article>
+
+      <aside class="panel span-5">
+        <h2>Output finali</h2>
+        <p>Ogni stato produce documenti diversi. Questo rende chiaro cosa e' pronto e cosa no.</p>
+        <ul class="quick-list">
+          <li><strong>READY:</strong> issue normalizzata, triage, solution plan, prompt Codex.</li>
+          <li><strong>WAITING_REPORTER:</strong> bozza commento Jira.</li>
+          <li><strong>WAITING_TECH_DB:</strong> bozza richiesta DB tecnico.</li>
+          <li><strong>E2E:</strong> report browser in <code>docs/e2e-repro</code> quando valutato.</li>
+          <li><strong>Ogni run:</strong> sintesi finale in <code>artifacts/triage/triage-summary.md</code>.</li>
+        </ul>
+      </aside>
+
+      <article class="panel span-12">
+        <h2>In pratica: come leggere il workflow in 30 secondi</h2>
+        <p>
+          Prima si capisce da dove arriva il bug. Poi si raccolgono le prove. Se le prove non bastano,
+          non si finge che il bug sia pronto: si prepara la richiesta giusta e ci si ferma. Se invece il
+          bug e' completo, si passa alla parte ad alto valore: struttura, diagnosi, piano tecnico e prompt
+          per l'implementazione. L'E2E e' un supporto parallelo, non un sostituto della chiarezza del ticket.
+        </p>
+        <div class="references">
+          <a href="./routing-rules.md">Routing Rules</a>
+          <a href="./output-schema.md">Output Schema</a>
+          <a href="./normalization-template.md">Normalization Template</a>
+          <a href="./e2e-repro-template.md">E2E Repro Template</a>
+        </div>
+        <p class="footer-note">
+          Fonte sintetizzata da <code>AGENTS.md</code> e dai documenti di supporto presenti nella cartella <code>docs</code>.
+        </p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "issueKey": "TP-8693",
+  "product": "vulki",
+  "baseUrl": "http://localhost:4200",
+  "applicabilityVerdict": "BLOCCATA",
+  "executionAttempted": false,
+  "status": "inconclusive",
+  "stepsAttempted": [],
+  "finalUrl": null,
+  "observedText": [
+    "Errore \"Too many parameters\" accedendo a Homepage PAYEE con ruolo SYSADMIN abilitato al monitoring"
+  ],
+  "savedScreenshots": [],
+  "blocker": [
+    "Missing explicit UI reproduction steps",
+    "Missing monitoring configuration details for SYSADMIN role",
+    "Missing observable page-level evidence beyond issue title",
+    "Playwright MCP unavailable in current session"
+  ]
+}
