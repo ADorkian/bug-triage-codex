@@ -10,7 +10,8 @@ A bug can only be considered fully ready for implementation when all of the foll
 - `artifacts/issues/{ISSUE_KEY}-solution-plan.md` exists
 - `artifacts/prompts/{ISSUE_KEY}-codex-prompt.md` exists
 - The solution plan names likely files or modules to inspect first
-- The solution plan contains a smallest defensible fix, edge cases, test strategy, rollback strategy, assumptions, and explicit definition of done
+- The solution plan contains a smallest defensible fix, edge cases, E2E data readiness, test strategy, rollback strategy, assumptions, and explicit definition of done
+- E2E data readiness explicitly states one of: required data already present, verification not possible from the available context/MCPs, or minimum data setup required to execute an E2E validation
 - The prompt matches the plan and does not guess missing facts
 - The critic passes with no blocking findings
 

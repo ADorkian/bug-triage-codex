@@ -21,7 +21,7 @@ The prompt must include:
 - implementation goal
 - files/areas to inspect first
 - ordered execution steps
-- test requirements
+- test requirements, including any required E2E data setup or explicit note that data presence could not be verified
 - quality gate
 - expected output format
 - an explicit instruction not to guess missing facts

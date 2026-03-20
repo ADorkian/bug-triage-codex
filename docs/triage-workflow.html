@@ -461,7 +461,7 @@
         <div class="flow">
           <div class="flow-step" data-step="1">
             <strong>Router</strong>
-            <p>Capisce se il bug appartiene a Vulki o Tarko, sceglie la board corretta e prende i primi bug validi in ordine.</p>
+            <p>Recupera dalle board di Vulki o Tarko i primi 8 bug validi in ordine.</p>
           </div>
           <div class="flow-step" data-step="2">
             <strong>Jira intake</strong>
@@ -599,22 +599,10 @@
       </aside>
 
       <article class="panel span-12">
-        <h2>In pratica: come leggere il workflow in 30 secondi</h2>
-        <p>
-          Prima si capisce da dove arriva il bug. Poi si raccolgono le prove. Se le prove non bastano,
-          non si finge che il bug sia pronto: si prepara la richiesta giusta e ci si ferma. Se invece il
-          bug e' completo, si passa alla parte ad alto valore: struttura, diagnosi, piano tecnico e prompt
-          per l'implementazione. L'E2E e' un supporto parallelo, non un sostituto della chiarezza del ticket.
-        </p>
-        <div class="references">
-          <a href="./routing-rules.md">Routing Rules</a>
-          <a href="./output-schema.md">Output Schema</a>
-          <a href="./normalization-template.md">Normalization Template</a>
-          <a href="./e2e-repro-template.md">E2E Repro Template</a>
-        </div>
-        <p class="footer-note">
-          Fonte sintetizzata da <code>AGENTS.md</code> e dai documenti di supporto presenti nella cartella <code>docs</code>.
-        </p>
+        <h2>Idee future</h2>
+        <ul>
+          <li>Hook da Jira quando la issue di bug viene spostata in To Do.</li>
+        </ul>
       </article>
     </section>
   </main>

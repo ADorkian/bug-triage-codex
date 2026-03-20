@@ -20,6 +20,7 @@ The plan must include:
 - likely files/modules to inspect
 - suggested fix approach
 - edge cases
+- E2E data readiness, stating whether the required bug data is already present, could not be verified, or must be introduced
 - test strategy
 - rollback strategy
 - definition of done
@@ -29,8 +30,13 @@ Planning rules:
 - Prefer the smallest defensible fix.
 - Separate known facts from assumptions.
 - Mention files/modules to inspect first, even if the exact fix location is not yet proven.
+- When a SQL Server MCP is configured and the bug depends on persisted business data, use it in read-only mode to verify whether the data needed for the bug and for an E2E test is already present.
+- If SQL verification is possible, report only the minimum evidence needed for planning: likely tables/entities checked, filters used at a high level, and whether the required records appear to exist. Do not write secrets, raw connection strings, or large query dumps into the artifact.
+- If the required records are missing, describe the smallest data setup needed to make E2E validation possible and whether that setup belongs in fixtures, seed scripts, SQL scripts, or manual preconditions.
+- If SQL Server MCP is not available, access is insufficient, or the bug is not data-dependent, say so explicitly instead of guessing.
 - Include a realistic rollback path and targeted tests.
 - Do not propose repository-wide refactors unless the evidence clearly demands them.
+- Use the skill `tarko-solution-planner-codebase` when the bug belongs to Tarko and you need to ground the plan in the real codebase under `C:\\BtoWebNet\\MENSTD\\STANDARD` and in the structure docs under `C:\\BtoWebNet\\MENSTD\\.AiInfo`.
 - Write the artifact in Italian by default. Use English only when the run prompt explicitly requests English.
 """
 

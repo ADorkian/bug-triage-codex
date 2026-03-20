@@ -20,6 +20,10 @@
 
 {{edge_cases}}
 
+## Verifica Dati Per Test E2E
+
+{{e2e_data_readiness}}
+
 ## Strategia Di Test
 
 {{test_strategy}}

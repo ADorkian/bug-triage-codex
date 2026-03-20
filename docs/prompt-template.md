@@ -10,7 +10,7 @@ The generated Codex implementation prompt must be systematic and reusable.
 4. Implementation goal
 5. Files or areas to inspect first
 6. Ordered execution steps
-7. Test requirements
+7. Test requirements, including data prerequisites or seed/setup steps needed for E2E validation when the solution plan identifies them
 8. Quality gate
 9. Expected output format
 10. Explicit instruction not to guess missing facts

@@ -124,8 +124,19 @@ required = false
 server_name = "CHANGE_ME_AZURE_MCP"
 default_mode = "read_only"
 
+# Optional MCP: use to verify, in read-only mode, whether the SQL data needed to reproduce the bug or execute E2E validation already exists.
+[mcp.sql_server]
+required = false
+server_name = "CHANGE_ME_SQL_SERVER_MCP"
+default_mode = "read_only"
+
 # Optional MCP: use to pull failing pipeline context or historical test results.
 [mcp.ci]
 required = false
 server_name = "CHANGE_ME_CI_MCP"
 default_mode = "read_only"
+
+[mcp_servers.playwright]
+args = ["@playwright/mcp@latest"]
+command = "npx"
+enabled = true

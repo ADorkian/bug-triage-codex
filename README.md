@@ -50,6 +50,7 @@ Optional:
 
 - GitHub or repository metadata MCP for code ownership or linked change context
 - Azure MCP for checking whether the customer DB is already available
+- SQL Server MCP for verifying in read-only mode whether the records needed for reproduction or E2E validation already exist
 - CI/test MCP for existing build or regression signals
 
 Read-only by default:

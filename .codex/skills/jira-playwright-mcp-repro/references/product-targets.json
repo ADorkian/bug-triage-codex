@@ -6,9 +6,9 @@
     "startPath": "/"
   },
   "tarko": {
-    "baseUrl": "<set-tarko-base-url>",
-    "username": "<set-tarko-username>",
-    "password": "<set-tarko-password>",
+    "baseUrl": "http://localhost/BtowebNet",
+    "username": "admnubess",
+    "password": "W3AreNube$$!",
     "startPath": "/"
   }
 }

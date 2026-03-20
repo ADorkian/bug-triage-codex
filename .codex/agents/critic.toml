@@ -18,6 +18,7 @@ Reject weak output when any of the following is true:
 - a claim is not supported by issue evidence
 - the solution plan is vague or skips the smallest defensible fix
 - files/modules to inspect are missing
+- E2E data readiness is missing for a data-dependent bug, or the plan does not say whether the required data is present, missing, or unverifiable
 - test strategy, rollback, assumptions, or definition of done are missing
 - the prompt guesses facts or diverges from the plan
 - the outputs are inconsistent with one another

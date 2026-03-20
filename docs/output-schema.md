@@ -40,7 +40,7 @@ The following level-1 markdown headers are mandatory:
 
 - Normalized issue files must match `docs/normalization-template.md` and `templates/normalized-issue.md`.
 - Triage files must match `docs/triage-template.md` and `templates/triage-item.md`.
-- Solution plans must match `templates/solution-plan.md` and include the definition of done from `docs/definition-of-done.md`.
+- Solution plans must match `templates/solution-plan.md`, include the definition of done from `docs/definition-of-done.md`, and contain an explicit E2E data readiness section that says whether the required business data is present, missing, or not verifiable with the available evidence/MCPs.
 - Codex prompts must match `docs/prompt-template.md` and `templates/codex-prompt.md`.
 - Action drafts must use the matching file under `templates/`.
 - `WAITING_TECH_DB` artifacts should also record whether user confirmation is still pending, the proposed Jira TECH payload, and any created Jira key/URL plus the triage-link outcome when write-back occurred.

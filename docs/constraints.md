@@ -30,6 +30,7 @@ These constraints apply to every agent in `bug-triage-codex`.
 | C-10 | Do not guess missing facts. Use `Unknown`, `Not provided`, or an explicit assumption when evidence is absent. |
 | C-11 | Every `READY` bug must have a normalized issue, triage, solution plan, Codex prompt, and a passing critic verdict. |
 | C-12 | Every solution plan must include the smallest defensible fix, risks, rollback strategy, test strategy, assumptions, and definition of done. |
+| C-12a | When SQL Server MCP is available and the bug is data-dependent, the solution plan must state whether the data required for E2E validation is already present or must be introduced. If verification cannot be performed, that limit must be explicit. |
 | C-13 | All result artifacts are written in Italian by default. Use English only when the specific run prompt explicitly requests English. |
 
 ## Privacy And Traceability
@@ -37,5 +38,6 @@ These constraints apply to every agent in `bug-triage-codex`.
 | ID | Constraint |
 |---|---|
 | C-14 | Never write secrets, tokens, or raw connection strings into artifacts. |
+| C-14a | Do not copy full SQL query dumps or sensitive record payloads into artifacts. Summarize only the minimum evidence needed to justify data-readiness conclusions. |
 | C-15 | Preserve enough evidence traceability that a reviewer can see whether a claim came from the description, comments, attachments, or linked context. |
 | C-16 | Keep artifact filenames deterministic so repeated runs overwrite the same logical output unless your team intentionally introduces archival or versioning. |

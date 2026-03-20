@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tarko Planner Codebase"
+  short_description: "Collega bug, AiInfo e codebase Tarko"
+  default_prompt: "Use $tarko-solution-planner-codebase to ground a Tarko solution plan in the real codebase and .AiInfo structure."
